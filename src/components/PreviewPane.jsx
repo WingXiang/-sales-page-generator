@@ -73,19 +73,20 @@ export default function PreviewPane() {
               .bg-accent { background-color: var(--accent-color) !important; }
               
               /* Global button styles override */
-              a.bg-primary, 
-              a.bg-accent, 
-              a.text-primary-btn,
-              button {
+              a.bg-primary:not(.cta-btn-custom), 
+              a.bg-accent:not(.cta-btn-custom), 
+              a.text-primary-btn:not(.cta-btn-custom),
+              button:not(.cta-btn-custom) {
                   background-color: #c67e13 !important;
                   color: #ffffff !important;
                   border-color: #c67e13 !important;
                   background-image: none !important;
               }
-              a.bg-primary:hover, 
-              a.bg-accent:hover, 
-              a.text-primary-btn:hover,
-              button:hover {
+              a.bg-primary:not(.cta-btn-custom):hover, 
+              a.bg-accent:not(.cta-btn-custom):hover, 
+              a.text-primary-btn:not(.cta-btn-custom):hover,
+              button:not(.cta-btn-custom):hover,
+              .cta-btn-custom:hover {
                   background-color: #000000 !important;
                   color: #ffffff !important;
                   border-color: #000000 !important;

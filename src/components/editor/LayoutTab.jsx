@@ -4,11 +4,13 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const BLOCK_METADATA = {
     hero: { label: '主視覺與承諾', desc: '大圖與核心賣點' },
+    cta1: { label: '行動呼籲 1 (按鈕)', desc: '首頁主視覺下方按鈕' },
     painPoints: { label: '痛點共鳴', desc: '點出客戶困擾' },
     empathy: { label: '感同身受', desc: '理解與情緒共鳴' },
     transition: { label: '觀念翻轉', desc: '舊方法 vs 新觀念' },
     promise: { label: '核心承諾', desc: '轉變與保證' },
     services: { label: '優勢好處', desc: '產品核心特色' },
+    cta2: { label: '行動呼籲 2 (按鈕)', desc: '優勢特色下方按鈕' },
     curriculum: { label: '單元大綱', desc: '課程或服務細節' },
     about: { label: '品牌故事', desc: '創辦人與理念' },
     authority: { label: '專家權威', desc: '數據與信任感' },
@@ -16,7 +18,8 @@ const BLOCK_METADATA = {
     testimonials: { label: '學員見證', desc: '口碑與評價' },
     pricingPlans: { label: '定價方案', desc: '價格與行動呼籲' },
     faq: { label: '常見問答', desc: '消除最後疑慮' },
-    close: { label: '感性結尾', desc: '最後促單' }
+    close: { label: '感性結尾', desc: '最後促單' },
+    cta3: { label: '行動呼籲 3 (按鈕)', desc: '促單結尾下方按鈕' }
 };
 
 export default function LayoutTab() {

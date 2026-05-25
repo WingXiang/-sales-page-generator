@@ -9,36 +9,24 @@ function getOptimalGridClass(count) {
 export function generateInnerHTMLContent(state, deviceMode) {
     let html = '';
 
-    const renderCTA1 = () => {
-        if (!state.cta1 || !state.cta1.text || !state.cta1.text.trim()) return '';
+    const renderCTASection = (id, cta) => {
+        if (!cta || !cta.text || !cta.text.trim()) return '';
+        const fontSize = cta.fontSize || '16px';
+        const bgColor = cta.bgColor || '#c67e13';
+        const paddingX = cta.paddingX || '32px';
+        const paddingY = cta.paddingY || '16px';
+        const link = cta.link || '#';
+        const text = cta.text;
+        const alignClass = id === 'cta1' ? 'justify-start' : 'justify-center';
+        const containerPadding = id === 'cta1' ? 'pt-6 pb-6' : 'pt-8 pb-8';
+        
         return `
-            <div class="pt-6 z-10 relative flex justify-start">
-                <a href="${state.cta1.link || '#'}" data-live-path="cta1.text" class="w-full sm:w-auto px-8 py-4 bg-accent text-white font-bold text-base rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all text-center text-primary-btn">
-                    ${state.cta1.text}
+            <!-- 行動呼籲按鈕 ${id} -->
+            <section id="section-${id}" class="z-10 relative flex ${alignClass} ${containerPadding} animate-fade-in transition-all duration-300">
+                <a href="${link}" data-live-path="${id}.text" class="cta-btn-custom w-full sm:w-auto font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all text-center" style="background-color: ${bgColor}; color: #ffffff; font-size: ${fontSize}; padding-left: ${paddingX}; padding-right: ${paddingX}; padding-top: ${paddingY}; padding-bottom: ${paddingY}; border: 1px solid ${bgColor};">
+                    ${text}
                 </a>
-            </div>
-        `;
-    };
-
-    const renderCTA2 = () => {
-        if (!state.cta2 || !state.cta2.text || !state.cta2.text.trim()) return '';
-        return `
-            <div class="pt-8 z-10 relative flex justify-center">
-                <a href="${state.cta2.link || '#'}" data-live-path="cta2.text" class="w-full sm:w-auto px-8 py-4 bg-primary text-white font-bold text-base rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all text-center">
-                    ${state.cta2.text}
-                </a>
-            </div>
-        `;
-    };
-
-    const renderCTA3 = () => {
-        if (!state.cta3 || !state.cta3.text || !state.cta3.text.trim()) return '';
-        return `
-            <div class="pt-8 z-10 relative flex justify-center">
-                <a href="${state.cta3.link || '#'}" data-live-path="cta3.text" class="w-full sm:w-auto px-8 py-4 bg-accent text-white font-bold text-base rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all text-center text-primary-btn">
-                    ${state.cta3.text}
-                </a>
-            </div>
+            </section>
         `;
     };
 
@@ -64,7 +52,6 @@ export function generateInnerHTMLContent(state, deviceMode) {
                              <ul class="space-y-3.5 opacity-80 inline-block text-left w-full">
                                  ${bulletsHtml}
                              </ul>
-                             ${renderCTA1()}
                         </div>
                         <div class="lg:col-span-5 relative flex justify-center">
                             <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-accent/10 rounded-[2.5rem] blur-2xl"></div>
@@ -188,7 +175,6 @@ export function generateInnerHTMLContent(state, deviceMode) {
                         <div class="grid ${serviceGridClass} gap-8 max-w-6xl mx-auto">
                             ${serviceList}
                         </div>
-                        ${renderCTA2()}
                     </section>
                 `;
                 break;
@@ -425,9 +411,20 @@ export function generateInnerHTMLContent(state, deviceMode) {
                         <h2 data-live-path="close.text" class="close-title font-black italic text-primary" style="font-size: 32px; line-height: 1.3;">
                             ${closeText}
                         </h2>
-                        ${renderCTA3()}
                     </section>
                 `;
+                break;
+
+            case 'cta1':
+                html += renderCTASection('cta1', state.cta1);
+                break;
+
+            case 'cta2':
+                html += renderCTASection('cta2', state.cta2);
+                break;
+
+            case 'cta3':
+                html += renderCTASection('cta3', state.cta3);
                 break;
         }
     });

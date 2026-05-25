@@ -29,8 +29,7 @@ const TEMPLATE_COURSE = {
     bullets: [
       { text: '建立自動化客源與服務系統，節省寶貴時間' },
       { text: '擺脫雜務糾纏，重新專心發展您的核心事業' },
-      { text: '無痛導入數位工具，一人也能發揮團隊級影響力' },
-      { text: '立即報名，省下繁瑣時間' }
+      { text: '無痛導入數位工具，一人也能發揮團隊級影響力' }
     ]
   },
   painPoints: [
@@ -117,10 +116,10 @@ const TEMPLATE_COURSE = {
     { q: '團購有優惠嗎？如何跟朋友一起合購？', a: '我們有提供三人團購優惠方案，您可以點選定價區塊的團購專區，或聯絡客服小幫手取得代碼。' }
   ],
   close: { text: '別再把時間浪費在重複的庶務上。現在就加入，建立您的數位自動化系統，奪回時間主導權！' },
-  cta1: { text: '👉 立即報名', link: '#' }, 
-  cta2: { text: '立即加入，開啟自動化營運', link: '#' }, 
-  cta3: { text: '現在加入，專注發展核心事業', link: '#' }, 
-  layout: ['hero', 'painPoints', 'empathy', 'transition', 'promise', 'services', 'curriculum', 'about', 'authority', 'qualification', 'testimonials', 'pricingPlans', 'faq', 'close'],
+  cta1: { text: '👉 立即報名', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px' }, 
+  cta2: { text: '立即加入，開啟自動化營運', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px' }, 
+  cta3: { text: '現在加入，專注發展核心事業', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px' }, 
+  layout: ['hero', 'cta1', 'painPoints', 'empathy', 'transition', 'promise', 'services', 'cta2', 'curriculum', 'about', 'authority', 'qualification', 'testimonials', 'pricingPlans', 'faq', 'close', 'cta3'],
   customStyles: {},
   elementStyles: { desktop: {}, tablet: {}, mobile: {} }
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../../store/useStore';
-import { Building, Image as ImageIcon, Frown, Cuboid, Tags, Plus, Trash2, GripVertical } from 'lucide-react';
+import { Building, Image as ImageIcon, Frown, Cuboid, Tags, Plus, Trash2, GripVertical, MousePointer } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import AiGenerator from './AiGenerator';
 import ImageUploadField from './ImageUploadField';
@@ -10,7 +10,8 @@ const coreMenuItems = [
   { id: 'hero', label: '2. 最上方招牌大圖', icon: <ImageIcon size={20} /> },
   { id: 'painPoints', label: '3. 戳中客人痛點', icon: <Frown size={20} /> },
   { id: 'services', label: '4. 產品三大優勢', icon: <Cuboid size={20} /> },
-  { id: 'pricingPlans', label: '5. 誘想定價方案', icon: <Tags size={20} /> }
+  { id: 'pricingPlans', label: '5. 誘想定價方案', icon: <Tags size={20} /> },
+  { id: 'ctas', label: '6. 行動呼籲按鈕設定', icon: <MousePointer size={20} /> }
 ];
 
 export default function CoreTab() {
@@ -89,7 +90,8 @@ export default function CoreTab() {
     if (newId) {
       const iframe = document.getElementById('preview-iframe');
       if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage({ type: 'SCROLL_TO', sectionId: `section-${newId === 'brand' ? 'about' : newId}` }, '*');
+        const sectionId = newId === 'brand' ? 'about' : newId === 'ctas' ? 'cta1' : newId;
+        iframe.contentWindow.postMessage({ type: 'SCROLL_TO', sectionId: `section-${sectionId}` }, '*');
       }
     }
   };
@@ -270,6 +272,54 @@ export default function CoreTab() {
                 <button onClick={() => addArrayItem('pricingPlans', {title: '新方案', features: '', currentPrice: '0'})} className="w-full py-2 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 font-bold text-xs flex items-center justify-center gap-1 hover:border-indigo-400 hover:text-indigo-600 transition-colors"><Plus size={14}/> 新增方案</button>
               </div>
             </>
+        );
+        case 'ctas': return (
+            <div className="space-y-6">
+                <p className="text-xs text-slate-500">此處可統一自訂頁面上三個獨立行動呼籲 (CTA) 按鈕的文案、連結、背景顏色、字體大小與內距（按鈕大小）。您可以在「佈局排序」分頁任意調整這三個按鈕在頁面上的位置。</p>
+                {['cta1', 'cta2', 'cta3'].map((key) => {
+                    const cta = state[key] || {};
+                    const label = key === 'cta1' ? 'CTA 1 (首頁主按鈕)' : key === 'cta2' ? 'CTA 2 (產品優勢下按鈕)' : 'CTA 3 (促單結尾按鈕)';
+                    return (
+                        <div key={key} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
+                            <h4 className="text-xs font-black text-slate-700 border-b border-slate-200 pb-1.5">{label}</h4>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className={labelClass}>按鈕文字</label>
+                                    <input type="text" value={cta.text || ''} onChange={(e) => updateField(key, 'text', e.target.value)} onFocus={() => handleFocus(`${key}.text`)} onBlur={handleBlur} className={inputClass} />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>按鈕連結</label>
+                                    <input type="text" value={cta.link || ''} onChange={(e) => updateField(key, 'link', e.target.value)} onBlur={handleBlur} className={inputClass} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label className={labelClass}>文字大小 (px)</label>
+                                    <input type="number" value={parseInt(cta.fontSize || '16')} onChange={(e) => updateField(key, 'fontSize', `${e.target.value || 16}px`)} onBlur={handleBlur} className={inputClass} min="10" max="60" />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>水平內距 (寬度 px)</label>
+                                    <input type="number" value={parseInt(cta.paddingX || '32')} onChange={(e) => updateField(key, 'paddingX', `${e.target.value || 32}px`)} onBlur={handleBlur} className={inputClass} min="10" max="100" />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>垂直內距 (高度 px)</label>
+                                    <input type="number" value={parseInt(cta.paddingY || '16')} onChange={(e) => updateField(key, 'paddingY', `${e.target.value || 16}px`)} onBlur={handleBlur} className={inputClass} min="5" max="50" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className={labelClass}>按鈕背景顏色</label>
+                                <div className="flex items-center gap-3">
+                                    <div className="relative w-10 h-10 rounded-lg shrink-0 overflow-hidden border border-slate-200 shadow-inner">
+                                        <div className="absolute inset-0 z-0 pointer-events-none" style={{ backgroundColor: cta.bgColor || '#c67e13' }}></div>
+                                        <input type="color" value={cta.bgColor || '#c67e13'} onChange={(e) => updateField(key, 'bgColor', e.target.value)} className="absolute inset-[-10px] w-[150%] h-[150%] opacity-0 cursor-pointer z-10" />
+                                    </div>
+                                    <input type="text" value={cta.bgColor || '#c67e13'} onChange={(e) => updateField(key, 'bgColor', e.target.value)} className={inputClass} placeholder="#c67e13" />
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         );
         default: return null;
     }
