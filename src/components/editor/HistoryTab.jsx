@@ -191,38 +191,7 @@ export default function HistoryTab() {
         </form>
       </div>
 
-      {/* 2. Auto-save & Maintenance */}
-      <div className="bg-slate-100/50 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-ping"></span>
-          <span className="font-bold text-slate-600">系統即時自動暫存已啟用</span>
-        </div>
-        <button 
-          onClick={handleResetToDefault} 
-          className="flex items-center gap-1 text-[11px] font-extrabold text-red-500 hover:text-red-700 transition-colors uppercase"
-        >
-          <RotateCcw size={12} /> 重設為預設範本
-        </button>
-      </div>
 
-      {/* 3. Import JSON backup */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Upload className="text-slate-500" size={16} />
-            <h3 className="font-bold text-xs text-slate-700">匯入外部 JSON 備份檔</h3>
-          </div>
-          <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg px-2.5 py-1 text-[10px] font-black text-slate-600 transition-all flex items-center gap-1">
-            <Clock size={12} /> 選擇檔案
-            <input 
-              type="file" 
-              accept=".json" 
-              onChange={handleImportJson} 
-              className="hidden" 
-            />
-          </label>
-        </div>
-      </div>
 
       {/* 4. Past Saved Versions */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
