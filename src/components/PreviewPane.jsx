@@ -92,6 +92,12 @@ export default function PreviewPane() {
                   border-color: #000000 !important;
                   background-image: none !important;
               }
+              
+              #section-cta1, 
+              #section-cta2, 
+              #section-cta3 {
+                  margin-top: 1.5rem !important;
+              }
           </style>
       </head>
       <body class="device-${deviceMode} antialiased min-h-screen transition-colors duration-200">
