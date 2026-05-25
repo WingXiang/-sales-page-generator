@@ -4,12 +4,43 @@ import Header from './components/Header';
 import EditorPane from './components/EditorPane';
 import PreviewPane from './components/PreviewPane';
 import { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 function App() {
   const containerRef = useRef(null);
   const editorRef = useRef(null);
   const dragHandleRef = useRef(null);
   
+  const { state, loadState } = useStore();
+  const isFirstLoad = useRef(true);
+
+  // Load auto-saved draft on mount
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem('sales_page_autosave');
+      if (savedDraft) {
+        const parsed = JSON.parse(savedDraft);
+        if (parsed && typeof parsed === 'object' && parsed.hero) {
+          loadState(parsed);
+          toast.success('已自動載入您上次編輯的最新紀錄！');
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load auto-saved draft:', e);
+    }
+  }, [loadState]);
+
+  // Auto-save draft on state change
+  useEffect(() => {
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+      return;
+    }
+    if (state) {
+      localStorage.setItem('sales_page_autosave', JSON.stringify(state));
+    }
+  }, [state]);
+
   useEffect(() => {
     const handle = dragHandleRef.current;
     const editor = editorRef.current;

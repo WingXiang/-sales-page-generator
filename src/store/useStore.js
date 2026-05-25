@@ -296,5 +296,9 @@ export const useStore = create((set) => ({
         }
       }
     };
-  })
+  }),
+
+  loadState: (newState) => set({ state: newState }),
+  
+  resetState: () => set({ state: JSON.parse(JSON.stringify(TEMPLATE_COURSE)) })
 }));
