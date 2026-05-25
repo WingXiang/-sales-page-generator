@@ -512,6 +512,12 @@ ${C.current.stack}
         .animate-fade-in {
             animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        
+        #section-cta1, 
+        #section-cta2, 
+        #section-cta3 {
+            margin-top: 1.5rem !important;
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen">
@@ -595,6 +601,12 @@ ${C.current.stack}
                   color: #ffffff !important;
                   border-color: #000000 !important;
                   background-image: none !important;
+              }
+              
+              #section-cta1, 
+              #section-cta2, 
+              #section-cta3 {
+                  margin-top: 1.5rem !important;
               }
           </style>
       </head>
