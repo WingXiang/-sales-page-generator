@@ -156,10 +156,15 @@ export function exportHTML(state) {
             animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         
-        #section-cta1, 
+        main > #section-cta1 {
+            margin-top: -3.5rem !important;
+        }
+        #section-cta1 {
+            margin-top: 1.5rem !important;
+        }
         #section-cta2, 
         #section-cta3 {
-            margin-top: 1.5rem !important;
+            margin-top: -2rem !important;
         }
     </style>
 </head>

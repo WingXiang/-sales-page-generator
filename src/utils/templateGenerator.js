@@ -9,21 +9,51 @@ function getOptimalGridClass(count) {
 export function generateInnerHTMLContent(state, deviceMode) {
     let html = '';
 
-    const renderCTASection = (id, cta) => {
+    const cta1Index = state.layout ? state.layout.indexOf('cta1') : -1;
+    const heroIndex = state.layout ? state.layout.indexOf('hero') : -1;
+    const isCta1AfterHero = heroIndex !== -1 && cta1Index === heroIndex + 1;
+
+    const renderCTASection = (id, cta, isNested = false) => {
         if (!cta || !cta.text || !cta.text.trim()) return '';
         const fontSize = cta.fontSize || '16px';
         const bgColor = cta.bgColor || '#c67e13';
         const paddingX = cta.paddingX || '32px';
         const paddingY = cta.paddingY || '16px';
+        const borderRadius = cta.borderRadius || '16px';
+        const widthMode = cta.widthMode || 'auto';
+        const customWidth = cta.customWidth || '300px';
+        const heightMode = cta.heightMode || 'auto';
+        const customHeight = cta.customHeight || '50px';
         const link = cta.link || '#';
         const text = cta.text;
+        
         const alignClass = id === 'cta1' ? 'justify-start' : 'justify-center';
-        const containerPadding = id === 'cta1' ? 'pt-6 pb-6' : 'pt-8 pb-8';
+        const containerPadding = isNested ? 'pt-2' : (id === 'cta1' ? 'pt-6 pb-6' : 'pt-8 pb-8');
+        
+        // Build style rules
+        let btnStyle = `background-color: ${bgColor}; color: #ffffff; font-size: ${fontSize}; border: 1px solid ${bgColor}; border-radius: ${borderRadius};`;
+        
+        if (widthMode === 'full') {
+            btnStyle += ` width: 100%; display: inline-flex; justify-content: center; align-items: center;`;
+        } else if (widthMode === 'custom') {
+            btnStyle += ` width: ${customWidth}; max-width: 100%; display: inline-flex; justify-content: center; align-items: center;`;
+        } else {
+            btnStyle += ` padding-left: ${paddingX}; padding-right: ${paddingX};`;
+        }
+
+        if (heightMode === 'custom') {
+            btnStyle += ` height: ${customHeight}; display: inline-flex; justify-content: center; align-items: center;`;
+        } else {
+            btnStyle += ` padding-top: ${paddingY}; padding-bottom: ${paddingY};`;
+            if (widthMode === 'full' || widthMode === 'custom') {
+                btnStyle += ` display: inline-flex; justify-content: center; align-items: center;`;
+            }
+        }
         
         return `
             <!-- 行動呼籲按鈕 ${id} -->
             <section id="section-${id}" class="z-10 relative flex ${alignClass} ${containerPadding} animate-fade-in transition-all duration-300">
-                <a href="${link}" data-live-path="${id}.text" class="cta-btn-custom w-full sm:w-auto font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all text-center" style="background-color: ${bgColor}; color: #ffffff; font-size: ${fontSize}; padding-left: ${paddingX}; padding-right: ${paddingX}; padding-top: ${paddingY}; padding-bottom: ${paddingY}; border: 1px solid ${bgColor};">
+                <a href="${link}" data-live-path="${id}.text" class="cta-btn-custom font-bold shadow-lg hover:scale-105 active:scale-95 transition-all text-center" style="${btnStyle}">
                     ${text}
                 </a>
             </section>
@@ -42,6 +72,8 @@ export function generateInnerHTMLContent(state, deviceMode) {
                     </li>
                 `).join('') : '';
                 
+                const heroCtaHtml = isCta1AfterHero ? renderCTASection('cta1', state.cta1, true) : '';
+                
                 html += `
                     <!-- 首屏主視覺區 -->
                     <section id="section-hero" class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 transition-all duration-300 pt-8 pb-16">
@@ -52,6 +84,7 @@ export function generateInnerHTMLContent(state, deviceMode) {
                              <ul class="space-y-3.5 opacity-80 inline-block text-left w-full">
                                  ${bulletsHtml}
                              </ul>
+                             ${heroCtaHtml}
                         </div>
                         <div class="lg:col-span-5 relative flex justify-center">
                             <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-accent/10 rounded-[2.5rem] blur-2xl"></div>
@@ -416,7 +449,9 @@ export function generateInnerHTMLContent(state, deviceMode) {
                 break;
 
             case 'cta1':
-                html += renderCTASection('cta1', state.cta1);
+                if (!isCta1AfterHero) {
+                    html += renderCTASection('cta1', state.cta1);
+                }
                 break;
 
             case 'cta2':

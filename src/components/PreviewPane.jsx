@@ -93,10 +93,15 @@ export default function PreviewPane() {
                   background-image: none !important;
               }
               
-              #section-cta1, 
+              main > #section-cta1 {
+                  margin-top: -3.5rem !important;
+              }
+              #section-cta1 {
+                  margin-top: 1.5rem !important;
+              }
               #section-cta2, 
               #section-cta3 {
-                  margin-top: 1.5rem !important;
+                  margin-top: -2rem !important;
               }
           </style>
       </head>

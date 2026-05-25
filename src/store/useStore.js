@@ -116,9 +116,9 @@ const TEMPLATE_COURSE = {
     { q: '團購有優惠嗎？如何跟朋友一起合購？', a: '我們有提供三人團購優惠方案，您可以點選定價區塊的團購專區，或聯絡客服小幫手取得代碼。' }
   ],
   close: { text: '別再把時間浪費在重複的庶務上。現在就加入，建立您的數位自動化系統，奪回時間主導權！' },
-  cta1: { text: '👉 立即報名', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px' }, 
-  cta2: { text: '立即加入，開啟自動化營運', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px' }, 
-  cta3: { text: '現在加入，專注發展核心事業', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px' }, 
+  cta1: { text: '👉 立即報名', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' }, 
+  cta2: { text: '立即加入，開啟自動化營運', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' }, 
+  cta3: { text: '現在加入，專注發展核心事業', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' }, 
   layout: ['hero', 'cta1', 'painPoints', 'empathy', 'transition', 'promise', 'services', 'cta2', 'curriculum', 'about', 'authority', 'qualification', 'testimonials', 'pricingPlans', 'faq', 'close', 'cta3'],
   customStyles: {},
   elementStyles: { desktop: {}, tablet: {}, mobile: {} }

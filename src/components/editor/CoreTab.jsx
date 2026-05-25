@@ -306,6 +306,41 @@ export default function CoreTab() {
                                     <input type="number" value={parseInt(cta.paddingY || '16')} onChange={(e) => updateField(key, 'paddingY', `${e.target.value || 16}px`)} onBlur={handleBlur} className={inputClass} min="5" max="50" />
                                 </div>
                             </div>
+                            <div className="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label className={labelClass}>圓角大小 (px)</label>
+                                    <input type="number" value={parseInt(cta.borderRadius || '16')} onChange={(e) => updateField(key, 'borderRadius', `${e.target.value || 16}px`)} onBlur={handleBlur} className={inputClass} min="0" max="100" />
+                                </div>
+                                <div>
+                                    <label className={labelClass}>寬度模式</label>
+                                    <select value={cta.widthMode || 'auto'} onChange={(e) => updateField(key, 'widthMode', e.target.value)} className={inputClass}>
+                                        <option value="auto">自適應內容</option>
+                                        <option value="full">滿版寬度</option>
+                                        <option value="custom">自訂寬度</option>
+                                    </select>
+                                </div>
+                                {cta.widthMode === 'custom' && (
+                                    <div>
+                                        <label className={labelClass}>自訂寬度 (px)</label>
+                                        <input type="number" value={parseInt(cta.customWidth || '300')} onChange={(e) => updateField(key, 'customWidth', `${e.target.value || 300}px`)} onBlur={handleBlur} className={inputClass} min="50" max="800" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label className={labelClass}>高度/長度模式</label>
+                                    <select value={cta.heightMode || 'auto'} onChange={(e) => updateField(key, 'heightMode', e.target.value)} className={inputClass}>
+                                        <option value="auto">自適應內容</option>
+                                        <option value="custom">自訂高度/長度</option>
+                                    </select>
+                                </div>
+                                {cta.heightMode === 'custom' && (
+                                    <div>
+                                        <label className={labelClass}>自訂高度/長度 (px)</label>
+                                        <input type="number" value={parseInt(cta.customHeight || '50')} onChange={(e) => updateField(key, 'customHeight', `${e.target.value || 50}px`)} onBlur={handleBlur} className={inputClass} min="20" max="200" />
+                                    </div>
+                                )}
+                            </div>
                             <div>
                                 <label className={labelClass}>按鈕背景顏色</label>
                                 <div className="flex items-center gap-3">
