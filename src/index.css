@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2a4189;
+  --color-indigo-50: #f0f3fb;
+  --color-indigo-100: #e1e7f6;
+  --color-indigo-200: #c4d0ee;
+  --color-indigo-300: #a6b9e5;
+  --color-indigo-400: #6b8cd3;
+  --color-indigo-500: #4264bd;
+  --color-indigo-600: #2a4189;
+  --color-indigo-700: #243775;
+  --color-indigo-800: #1e2c5f;
+  --color-indigo-900: #1a254f;
+}
+
+@layer base {
+  body, html {
+    @apply font-sans bg-slate-50 text-slate-900 overflow-hidden h-screen;
+    font-family: "Inter", "Microsoft JhengHei", "Segoe UI", sans-serif !important;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.drag-indicator-top {
+  border-top: 3px dashed var(--color-primary) !important;
+  padding-top: 4px;
+  transition: all 0.15s ease-in-out;
+}
+.drag-indicator-bottom {
+  border-bottom: 3px dashed var(--color-primary) !important;
+  padding-bottom: 4px;
+  transition: all 0.15s ease-in-out;
+}
+.dragging {
+  opacity: 0.4;
+  background-color: #f1f5f9 !important;
+}
+
+.btn-restyle {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+button:not(.tab-bar-btn):not(.preset-btn):not([class*="text-red"]):not([class*="p-1"]):not([class*="p-2"]):not([class*="p-3"]):not([class*="rounded-full"]):not([class*="absolute"]),
+.btn-style {
+  background-color: #c67e13 !important;
+  color: #ffffff !important;
+  border-color: #c67e13 !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+button:hover, 
+a:hover, 
+[role="button"]:hover,
+.btn-restyle:hover,
+input[type="file"] + label:hover {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
+  background-image: none !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+button:hover *,
+a:hover *,
+[role="button"]:hover *,
+.btn-restyle:hover *,
+input[type="file"] + label:hover * {
+  color: #ffffff !important;
+}
+
+/* Preset buttons hover styles to keep blue background and turn all inner text white */
+.preset-btn:hover {
+  background-color: #2a4189 !important;
+  border-color: #2a4189 !important;
+}
+.preset-btn:hover * {
+  color: #ffffff !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (max-width: 1023px) {
+  .hidden-mobile-pane {
+    display: none !important;
+  }
+}
