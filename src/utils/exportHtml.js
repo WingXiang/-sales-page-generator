@@ -157,14 +157,21 @@ export function exportHTML(state) {
         }
         
         main > #section-cta1 {
-            margin-top: -3.5rem !important;
+            margin-top: 2.5rem !important;
+        }
+        main > #section-cta1 + * {
+            margin-top: 2.5rem !important;
         }
         #section-cta1 {
             margin-top: 1.5rem !important;
         }
         #section-cta2, 
         #section-cta3 {
-            margin-top: -2rem !important;
+            margin-top: 2.5rem !important;
+        }
+        #section-cta2 + *, 
+        #section-cta3 + * {
+            margin-top: 2.5rem !important;
         }
     </style>
 </head>
