@@ -17,7 +17,7 @@ function App() {
   // Load auto-saved draft on mount
   useEffect(() => {
     try {
-      const savedDraft = localStorage.getItem('sales_page_autosave');
+      const savedDraft = localStorage.getItem('sales_page_autosave_v2');
       if (savedDraft) {
         const parsed = JSON.parse(savedDraft);
         if (parsed && typeof parsed === 'object' && parsed.hero) {
@@ -37,7 +37,7 @@ function App() {
       return;
     }
     if (state) {
-      localStorage.setItem('sales_page_autosave', JSON.stringify(state));
+      localStorage.setItem('sales_page_autosave_v2', JSON.stringify(state));
     }
   }, [state]);
 

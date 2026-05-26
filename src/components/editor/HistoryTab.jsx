@@ -65,7 +65,7 @@ export default function HistoryTab() {
   const handleRestoreVersion = (version) => {
     if (window.confirm(`確定要載入「${version.name}」並覆蓋目前正在編輯的內容嗎？\n系統會自動將目前的內容暫存，以便您隨時找回。`)) {
       // Auto-save current state as a backup before overriding
-      localStorage.setItem('sales_page_autosave', JSON.stringify(state));
+      localStorage.setItem('sales_page_autosave_v2', JSON.stringify(state));
       loadState(version.state);
       toast.success(`已載入版本：${version.name}`);
     }
@@ -107,11 +107,11 @@ export default function HistoryTab() {
 
   // Reset to default template
   const handleResetToDefault = () => {
-    if (window.confirm('確定要將編輯內容重設為預設範本嗎？目前編輯的內容將會被覆蓋！')) {
+    if (window.confirm('確定要將目前編輯內容重設為預設的「數位顧問培訓班」範本嗎？\n重設後目前的編輯內容將會被覆蓋！')) {
       // Auto-save current state as backup before resetting
-      localStorage.setItem('sales_page_autosave', JSON.stringify(state));
+      localStorage.setItem('sales_page_autosave_v2', JSON.stringify(state));
       resetState();
-      toast.success('已重設為預設範本！');
+      toast.success('已成功重設為「數位顧問培訓班」預設範本！');
     }
   };
 
@@ -198,7 +198,16 @@ export default function HistoryTab() {
         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <Clock className="text-slate-600" size={18} />
-            <h3 className="font-black text-sm text-slate-800">歷史編輯紀錄與版本</h3>
+            <h3 className="font-black text-sm text-slate-800 flex items-center gap-2">
+              歷史編輯紀錄與版本
+              <button 
+                onClick={handleResetToDefault} 
+                className="text-[10px] font-black text-red-500 hover:text-red-700 transition-colors flex items-center gap-0.5 uppercase ml-2 border border-red-200 bg-red-50 px-2 py-0.5 rounded hover:bg-red-100"
+                title="重設目前頁面為預設範本"
+              >
+                <RotateCcw size={10} /> 重設
+              </button>
+            </h3>
           </div>
           <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
             共 {versions.length} 個版本
