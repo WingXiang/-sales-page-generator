@@ -5,15 +5,15 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import ImageUploadField from './ImageUploadField';
 
 const advancedItems = [
-  { id: 'empathy', label: '1. 同理暖心貼心話', icon: <Heart size={20} /> },
-  { id: 'transition', label: '2. 新舊觀念大對決', icon: <RefreshCw size={20} /> },
-  { id: 'promise', label: '3. 給予客群承諾', icon: <ShieldCheck size={20} /> },
-  { id: 'curriculum', label: '4. 教學服務大綱', icon: <BookOpen size={20} /> },
-  { id: 'authority', label: '5. 講師與數據介紹', icon: <GraduationCap size={20} /> },
-  { id: 'qualification', label: '6. 適合哪些對象', icon: <Users size={20} /> },
-  { id: 'testimonials', label: '7. 學員真實見證', icon: <Star size={20} /> },
-  { id: 'faq', label: '8. 解除顧客疑惑', icon: <HelpCircle size={20} /> },
-  { id: 'close', label: '9. 最後感性促單', icon: <ArrowRight size={20} /> }
+  { id: 'empathy', label: '1. 感同身受', icon: <Heart size={20} /> },
+  { id: 'transition', label: '2. 觀念翻轉', icon: <RefreshCw size={20} /> },
+  { id: 'promise', label: '3. 核心承諾', icon: <ShieldCheck size={20} /> },
+  { id: 'curriculum', label: '4. 單元大綱', icon: <BookOpen size={20} /> },
+  { id: 'authority', label: '5. 專家權威', icon: <GraduationCap size={20} /> },
+  { id: 'qualification', label: '6. 客群篩選', icon: <Users size={20} /> },
+  { id: 'testimonials', label: '7. 學員見證', icon: <Star size={20} /> },
+  { id: 'faq', label: '8. 常見問答', icon: <HelpCircle size={20} /> },
+  { id: 'close', label: '9. 感性結尾', icon: <ArrowRight size={20} /> }
 ];
 
 export default function AdvancedTab() {

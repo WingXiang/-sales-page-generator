@@ -6,11 +6,11 @@ import AiGenerator from './AiGenerator';
 import ImageUploadField from './ImageUploadField';
 
 const coreMenuItems = [
-  { id: 'brand', label: '1. 品牌故事與聯絡', icon: <Building size={20} /> },
-  { id: 'hero', label: '2. 最上方招牌大圖', icon: <ImageIcon size={20} /> },
-  { id: 'painPoints', label: '3. 戳中客人痛點', icon: <Frown size={20} /> },
-  { id: 'services', label: '4. 產品三大優勢', icon: <Cuboid size={20} /> },
-  { id: 'pricingPlans', label: '5. 誘想定價方案', icon: <Tags size={20} /> },
+  { id: 'brand', label: '1. 品牌故事', icon: <Building size={20} /> },
+  { id: 'hero', label: '2. 主視覺與承諾', icon: <ImageIcon size={20} /> },
+  { id: 'painPoints', label: '3. 痛點共鳴', icon: <Frown size={20} /> },
+  { id: 'services', label: '4. 優勢好處', icon: <Cuboid size={20} /> },
+  { id: 'pricingPlans', label: '5. 定價方案', icon: <Tags size={20} /> },
   { id: 'ctas', label: '6. 行動呼籲按鈕設定', icon: <MousePointer size={20} /> }
 ];
 

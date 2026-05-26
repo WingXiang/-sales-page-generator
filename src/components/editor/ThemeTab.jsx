@@ -52,7 +52,7 @@ export default function ThemeTab() {
     updateField('theme', 'textColor', preset.textColor);
   };
 
-  const renderColorField = (label, key, defaultColor) => {
+  const renderColorField = (label, key, defaultColor, description) => {
     const value = theme[key] || defaultColor;
     const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(value);
     return (
@@ -63,8 +63,9 @@ export default function ThemeTab() {
              <div className="absolute inset-0 z-0 pointer-events-none" style={{ backgroundColor: value }}></div>
              <input type="color" value={isValidHex ? value : '#000000'} onChange={(e) => handleColorChange(key, e.target.value)} className="absolute inset-[-10px] w-[150%] h-[150%] opacity-0 cursor-pointer z-10" />
           </div>
-          <input type="text" value={value} onChange={(e) => handleColorChange(key, e.target.value)} className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:border-indigo-500 outline-none transition-all" placeholder="例: #2a4189 或 rgb(0,0,0)" />
+          <input type="text" value={value} onChange={(e) => handleColorChange(key, e.target.value)} className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 text-xs font-mono focus:border-indigo-500 outline-none transition-all font-semibold" placeholder="例: #2a4189 或 rgb(0,0,0)" />
         </div>
+        <p className="text-[10px] text-slate-400 font-bold leading-normal">{description}</p>
       </div>
     );
   };
@@ -106,10 +107,10 @@ export default function ThemeTab() {
         </h3>
         <p className="text-xs text-slate-500">點擊色塊即可開啟調色盤，系統會即時更新右側預覽畫面。支援手動輸入 HEX 或 RGB 色碼。</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pt-2">
-          {renderColorField('主色調 (Primary)', 'primaryColor', '#2a4189')}
-          {renderColorField('輔助色 (Accent)', 'accentColor', '#fbbf24')}
-          {renderColorField('背景色 (Background)', 'bgColor', '#f8fafc')}
-          {renderColorField('文字色 (Text)', 'textColor', '#0f172a')}
+          {renderColorField('主色調 (Primary)', 'primaryColor', '#2a4189', '影響範圍：全站大標題字體顏色、特點清單的勾選圖示、卡片與單元標題色彩。')}
+          {renderColorField('輔助色 (Accent)', 'accentColor', '#fbbf24', '影響範圍：部分承諾區塊的勾選圖示、強調節點、方案搶眼標籤。')}
+          {renderColorField('背景色 (Background)', 'bgColor', '#f8fafc', '影響範圍：整個銷售網頁的最底層背景色彩。')}
+          {renderColorField('文字色 (Text)', 'textColor', '#0f172a', '影響範圍：全站段落文字、清單描述、卡片內文等主要閱讀文字。')}
         </div>
       </div>
     </div>
