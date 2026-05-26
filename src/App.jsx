@@ -37,7 +37,11 @@ function App() {
       return;
     }
     if (state) {
-      localStorage.setItem('sales_page_autosave_v2', JSON.stringify(state));
+      try {
+        localStorage.setItem('sales_page_autosave_v2', JSON.stringify(state));
+      } catch (e) {
+        console.warn('Auto-save to localStorage failed (quota exceeded):', e);
+      }
     }
   }, [state]);
 

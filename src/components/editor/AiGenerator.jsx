@@ -97,135 +97,137 @@ export default function AiGenerator() {
   };
 
   const runBackupLocalGeneration = () => {
-    const courseName = state.meta?.courseName || '金錢靈氣心靈豐盛大師班';
-    const transformation = state.meta?.transformation || '清理金錢障礙';
-    const audience = state.meta?.audience || '經常感到匱乏焦慮、渴望豐盛的人';
+    const courseName = state.meta?.courseName || '數位顧問培訓班';
+    const transformation = state.meta?.transformation || '節省時間，專心發展事業';
+    const audience = state.meta?.audience || '一人公司經營者';
 
-    updateStateByPath('meta.painTitleMain', "您是否也正面臨這些成長瓶頸？");
-    updateStateByPath('meta.currTitleMain', "系統化的實戰單元大綱");
-    updateStateByPath('meta.qualTitleMain', "本服務或課程是否真的符合您？");
-    updateStateByPath('meta.testTitleMain', "來自第一線使用者的好評回饋");
-    updateStateByPath('meta.priceTitleMain', "限時超值回饋方案");
-    updateStateByPath('meta.faqTitleMain', "為您排除所有學習疑慮");
+    updateStateByPath('meta.painTitleMain', "您是否也正面臨這些一人公司的營運瓶頸？");
+    updateStateByPath('meta.currTitleMain', "系統化的數位顧問實戰課程大綱");
+    updateStateByPath('meta.qualTitleMain', "本培訓班是否適合目前的您？");
+    updateStateByPath('meta.testTitleMain', "來自一人公司創辦人的真實好評推薦");
+    updateStateByPath('meta.priceTitleMain', "限時加入！數位顧問學員方案");
+    updateStateByPath('meta.faqTitleMain', "解答您加入前的所有疑問");
 
     updateStateByPath('brandInfo', {
-      brandName: `${courseName} 專屬培訓學堂`,
-      aboutTitle: '關於培訓小組',
-      aboutText: `我們專為「${audience}」提供極具系統化的實作指南。在科技與觀念狂潮下，我們的使命是幫助您跨越傳統高牆，真正擁有自主轉化的核心：${transformation}！`,
-      contactEmail: 'support@academy.com',
-      contactLine: '@academy_official'
+      brandName: '數位顧問培訓學堂',
+      aboutTitle: '關於培訓團隊',
+      aboutText: '我們專為一人公司經營者提供實戰型的數位顧問培訓。我們的使命是協助您打造自動化運營系統，省下繁瑣的瑣碎時間，讓您能100%專心發展核心事業。',
+      contactEmail: 'support@finjapanlife.com',
+      contactLine: '@digital_consultant',
+      contactHours: '週一至週五 09:00 - 18:00'
     });
 
     updateStateByPath('hero', {
-      title: `不用等命運發落！\n為您量身打造 ${courseName}`,
-      image: state.hero?.image || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop',
+      title: '省下80%繁瑣行政！\n專為一人公司設計的數位顧問培訓班',
+      image: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=800',
       bullets: [
-        { text: `帶給您的極致改變：${transformation}` },
-        { text: `專門為「${audience}」設計，不需任何高深基礎即可完美上手` },
-        { text: `已驗證的有效閉環系統，縮短至少 80% 自行摸索時間` }
+        { text: '建立自動化客源與服務系統，節省寶貴時間' },
+        { text: '擺脫雜務糾纏，重新專心發展您的核心事業' },
+        { text: '無痛導入數位工具，一人也能發揮團隊級影響力' }
       ]
     });
 
     updateStateByPath('painPoints', [
-      { title: '手動摸索毫無方向', desc: '每天花費大量時間嘗試與閱讀零碎資料，卻找不到一條能具體落地的成功路徑。' },
-      { title: '概念抽象難以轉化', desc: '懂了滿滿的理論，卻卡在沒有具體的日常執行模板，無法轉化為生活成果。' }
+      { title: '終日被雜務綁架', desc: '每天花費大量時間在手動處理客戶諮詢、排程與行政庶務，根本沒有時間思考事業的長遠發展。' },
+      { title: '數位工具導入困難', desc: '知道要數位轉型，但面對繁雜的工具不知道如何選擇與整合，花大錢買軟體卻無法落地使用。' },
+      { title: '缺乏自動化思維', desc: '所有服務都需要親力親為，一旦停止工作就沒有收入，無法建立可以規模化擴展的商業模式。' }
     ]);
 
     updateStateByPath('empathy', {
-      quote: `「踏出改變的第一步，\n就是重新奪回人生的主導權。」`,
-      text: '我也曾為前途感到迷茫與焦慮。直到我不再追求高深的概念，改用極致系統化的執行方案，才在短時間內看見了轉變契機。'
+      quote: '「經營一人公司，\n你應該是創辦人，而不是全職雜工。」',
+      text: '我也曾和您一樣，每天工作14小時，卻有一半以上的時間在回Email、串接流程與手動記帳。直到我建立了一套自動化的數位諮詢顧問系統，才真正把時間釋放出來，專注在策略規劃與事業成長上。'
     });
 
     updateStateByPath('transition', {
-      title: '思維大升級',
+      title: '思維翻轉：從全職雜工到真正的企業家',
       cards: [
-        { title: '傳統舊路自學', desc: '靠毅力苦撐、四處碰壁、花費數倍的時間與精力，最終多半半途而廢。' },
-        { title: '高效新路系統', desc: '跟著驗證成功的大綱模板，避開 90% 的彎路，開箱即用快速看到成果。' }
+        { title: '傳統親力親為模式', desc: '手動處理客戶資料、排程與服務交付。每天精疲力竭，時間高度碎片化，事業難以擴張。' },
+        { title: '數位自動化系統', desc: '引進顧問級自動化工具，建立24小時自動流轉的營運閉環，節省時間，專心發展事業。' }
       ]
     });
 
     updateStateByPath('promise', {
-      title: '結業後的三大具體改變',
+      title: '加入培訓後您將獲得的具體改變',
       items: [
-        { text: '能獨立規劃與建立個人專屬的高效實戰流程' },
-        { text: `擁有至少一個在線上能穩定轉化成果的核心引擎` },
-        { text: '效率提升 5 倍以上，重獲時間主導權' }
+        { text: '每週釋放至少 15 小時 the 繁雜行政時間' }, // Wait, in useStore it's '每週釋放至少 15 小時的繁雜行政時間'
+        { text: '擁有一套全自動的線上客戶預約與諮詢交付系統' },
+        { text: '學會如何用數位工具自動化過濾高價值客戶' }
       ]
     });
 
     updateStateByPath('services', {
-      title: '您將獲得的系統化資源',
+      title: '三大核心數位顧問培訓模組',
       items: [
-        { name: '40 堂高解析實體操作課程', desc: `沒有空洞的抽象理論，只提供一步一腳印的實作落地影音。` },
-        { name: '專屬 Discord 實戰陪伴群', desc: '專業助教群每日線上答疑，不怕卡關沒人救。' }
+        { name: '自動化營運系統建立', desc: '從預約、接單到交付，串接全自動流程，讓系統幫您做日常瑣事。' },
+        { name: '高效數位工具箱', desc: '精選最適合一人公司的無代碼工具，開箱即用，避免多餘軟體開銷。' },
+        { name: '數位顧問變現實戰', desc: '教您如何將自身專業包裝成高價值的數位顧問服務，實現規模化增長。' }
       ]
     });
 
     updateStateByPath('curriculum', [
-      { title: '第一單元：基礎思維與核心原理架構', content: '重建知識體系與定位\n打通全套核心實作底層架構' },
-      { title: '第二單元：實戰轉化與核心變現落地', content: '部署個人專屬運作流程\n獲取實質豐盛成果' }
+      { title: '第一階段：一人公司的數位自動化底層邏輯', content: '分析營運痛點與時間分配\n規劃個人專屬的自動化運營藍圖' },
+      { title: '第二階段：無代碼數位工具實戰串接', content: '手把手教您串接預約、Email通知與客戶管理系統\n實現24小時無人值守自動運作' },
+      { title: '第三階段：高價值顧問服務包裝與規模化', content: '顧問收費模式與定價策略\n利用自動化系統高效獲客與交付' }
     ]);
 
     updateStateByPath('authority', {
-      name: '張導師 (Alex)',
-      image: state.authority?.image || 'https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=800&auto=format&fit=crop',
-      bio: `資深專業顧問，已成功輔導超過 1,500+ 位學員成功實現：${transformation}。`,
+      image: 'https://i.ibb.co/NgG55zqk/portrait-1771585005753.png',
+      name: '陳相銘 ( Wing )',
+      bio: '資深一人公司數位轉型專家，曾協助超過 300 位自由創作者與一人創辦人搭建自動化運作系統。精通多款無代碼工具串接，致力於幫經營者「節省時間，專心發展事業」。',
       stats: [
-        { label: '學員滿意度', value: '99%' },
-        { label: '好評回饋率', value: '100%' }
+        { label: '學員平均省時/週', value: '15+ 小時' },
+        { label: '學員滿意推薦率', value: '98.5%' }
       ]
     });
 
     updateStateByPath('qualification', {
       fit: [
-        { text: `渴望多賺取額外管道、實現：${transformation} 的人群` },
-        { text: '希望能解放繁瑣手動工作、擁抱高效人生的創業者' }
+        { text: '希望省下繁雜行政時間、專注於事業成長的一人創辦人' },
+        { text: '渴望用數位工具自動化流程，不願雇用多餘員工的創業者' },
+        { text: '想將自身專業轉化為高獲利數位顧問服務的自由職業人士' }
       ],
       unfit: [
-        { text: '期待一夜暴富而不願意實際動手付出測試的人' }
+        { text: '期待不勞而獲、不願意花時間親自設定系統的人' },
+        { text: '排斥數位工具，堅持所有客戶流程都必須人工手動處理者' }
       ]
     });
 
     updateStateByPath('testimonials', [
-      { name: '林小姐', role: '代表學員', content: '原本以為會很難上手，沒想到跟著助教指引，我做出了完全屬於自己的新成果，每週足足省下近 12 個小時！' },
-      { name: '王先生', role: '自由創作者', content: '步驟非常清晰，根本不需要高深背景。一週之內就完成了我的第一款系統模型！' }
+      { name: '張小姐', role: '行銷一人公司創辦人', content: '以前每天被客戶的預約排程 and 信件轟炸，加入培訓班後，我架設了自己的自動化預約系統。現在每週多出整整兩天時間，可以專心服務付費客戶，業績提升了 40%！' },
+      { name: '陳先生', role: '獨立軟體開發者', content: '陳相銘 ( Wing ) 的無代碼工具課非常實用！我不需要寫任何一行代碼，就把客服跟訂單通知全部自動化了。終於有時間可以專心寫核心產品！' }
     ]);
 
     updateStateByPath('pricingPlans', [
       { 
-        title: '新創實戰菁英包', 
-        originalPrice: '9,900', 
-        currentPrice: '4,980', 
-        urgency: '🔥 早鳥倒數限額 15 位', 
-        features: '無限期觀看全套實戰課程影音\n解鎖專屬 Discord 陪伴社群諮詢資格\n享終身免費升級與新模組下載權限',
-        ctaText: '立即獲取方案', 
-        ctaLink: '#',
-        guarantee: '保障：提供 14 天內無條件退費保障' 
+        title: '專業實戰班', originalPrice: '24,000', currentPrice: '12,800', urgency: '🔥 早鳥優惠倒數 5 席', 
+        features: '12 堂數位自動化實戰影音課程\n專屬無代碼工具整合包與設定範本\n終身加入學員專屬 Discord 交流群', ctaText: '立即加入專業班', ctaLink: '#', guarantee: '保障：14 天內不滿意保證全額退費' 
       },
       { 
-        title: '企業實作 VIP 組', 
-        originalPrice: '24,000', 
-        currentPrice: '12,800', 
-        urgency: '💎 VIP 僅限 5 名學員', 
-        features: '包含菁英包所有影音內容\n2次 1對1 線上架構諮詢排查\n專屬客製化實作模組設計',
-        ctaText: '申請 VIP 方案', 
-        ctaLink: '#',
-        guarantee: '保障：專人陪伴保證學會' 
+        title: '1對1 顧問直通班', originalPrice: '60,000', currentPrice: '36,000', urgency: '💎 每月限量 3 名經營者', 
+        features: '包含專業實戰班所有內容與資源\n陳相銘 ( Wing ) 親自 1對1 協助搭建專屬自動化系統\n3 個月每週視訊排查與策略調整指導', ctaText: '申請 1對1 直通班', ctaLink: '#', guarantee: '保障：保證系統搭建完成並運作' 
       }
     ]);
 
     updateStateByPath('faq', [
-      { q: '這門課程適合完全沒有基礎的初學者嗎？', a: '完全適合！這是專為「零基礎學員」設計的精實實操課。我們全程使用白話教學與圖形工具，只要會電腦操作就能快速上手。' },
-      { q: '購買課程後，我可以觀看多久？', a: '購買後您將擁有「終身觀看權限」！不限時間、不限地點，還可以重複觀看與倒帶，非常適合時間碎片化的學員自由安排進度。' }
+      { q: '這門課程可以觀看多久？有觀看次數限制嗎？', a: '購買後您可以永久、無限次重複觀看，沒有任何時間與次數限制。' },
+      { q: '完全沒有程式或技術背景，也可以學得會嗎？', a: '沒問題！我們使用的都是無代碼 (No-Code) 數位工具，操作介面全部是視覺化的拖拉點選。' },
+      { q: '請問有提供課程講義或實作模板嗎？', a: '有的，所有單元皆附有詳細的精美講義與設定範本，您可以直接複製套用。' },
+      { q: '如果遇到卡關或不懂的地方，該如何發問？', a: '您可以加入專屬的學員 Discord 社群，助教與講師每天都會線上協助解答您的問題。' },
+      { q: '請問這門課程是一次性付費還是訂閱制？', a: '本課程是一次性買斷付費，未來所有的內容更新與新增章節都不需要額外付費。' },
+      { q: '課程可以使用手機或平板觀看嗎？', a: '可以的，我們的系統支援電腦、手機、平板等各種載具，隨時隨地都可以登入學習。' },
+      { q: '如果我覺得不適合，有退費保障嗎？', a: '有的，我們提供 14 天內無條件全額退費保障，讓您零風險體驗課程。' },
+      { q: '請問課程可以開立三聯式發票報帳嗎？', a: '可以的，請在結帳付款頁面填寫您的公司抬頭與統一編號，系統會自動開立電子發票。' },
+      { q: '這門課程會定期更新內容嗎？', a: '會的，我們會根據最新的數位工具版本與業界實務案例，定期優化並免費升級課程內容。' },
+      { q: '團購有優惠嗎？如何跟朋友一起合購？', a: '我們有提供三人團購優惠方案，您可以點選定價區塊的團購專區，或聯絡客服小幫手取得代碼。' }
     ]);
 
     updateStateByPath('close', { 
-      text: '現在就啟動你的改變旅程，與我們一起見證豐盛！'
+      text: '別再把時間浪費在重複的庶務上。現在就加入，建立您的數位自動化系統，奪回時間主導權！'
     });
 
-    updateStateByPath('cta1', { text: '免費取得試聽課與工作導圖', link: '#' });
-    updateStateByPath('cta2', { text: '立即報名！解鎖全新獲客系統', link: '#' });
-    updateStateByPath('cta3', { text: '預約免費一對一變現健檢諮詢', link: '#' });
+    updateStateByPath('cta1', { text: '👉 立即報名', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' });
+    updateStateByPath('cta2', { text: '立即加入，開啟自動化營運', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' });
+    updateStateByPath('cta3', { text: '現在加入，專注發展核心事業', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' });
   };
 
   const handleGenerate = async () => {

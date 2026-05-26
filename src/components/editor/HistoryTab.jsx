@@ -65,7 +65,11 @@ export default function HistoryTab() {
   const handleRestoreVersion = (version) => {
     if (window.confirm(`確定要載入「${version.name}」並覆蓋目前正在編輯的內容嗎？\n系統會自動將目前的內容暫存，以便您隨時找回。`)) {
       // Auto-save current state as a backup before overriding
-      localStorage.setItem('sales_page_autosave_v2', JSON.stringify(state));
+      try {
+        localStorage.setItem('sales_page_autosave_v2', JSON.stringify(state));
+      } catch (e) {
+        console.warn('Backup failed:', e);
+      }
       loadState(version.state);
       toast.success(`已載入版本：${version.name}`);
     }
@@ -109,7 +113,11 @@ export default function HistoryTab() {
   const handleResetToDefault = () => {
     if (window.confirm('確定要將目前編輯內容重設為預設的「數位顧問培訓班」範本嗎？\n重設後目前的編輯內容將會被覆蓋！')) {
       // Auto-save current state as backup before resetting
-      localStorage.setItem('sales_page_autosave_v2', JSON.stringify(state));
+      try {
+        localStorage.setItem('sales_page_autosave_v2', JSON.stringify(state));
+      } catch (e) {
+        console.warn('Backup failed:', e);
+      }
       resetState();
       toast.success('已成功重設為「數位顧問培訓班」預設範本！');
     }
