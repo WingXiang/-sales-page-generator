@@ -82,7 +82,7 @@ function App() {
       }
     } catch (err) {
       console.error("Failed to verify user against spreadsheet:", err);
-      alert(`驗證失敗，無法連線至驗證伺服器：\n${err.message || err}\n請檢查網路連線、Apps Script 部署狀態，或嘗試使用無痕視窗開啟！`);
+      alert("驗證失敗，請確認您輸入的內容正確，或是請 Wing 協助開通權限！");
     } finally {
       setVerifying(false);
     }
