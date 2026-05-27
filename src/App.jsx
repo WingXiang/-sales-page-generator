@@ -58,10 +58,9 @@ function App() {
     toast.success("驗證成功！已解鎖銷售頁生成器所有功能。");
 
     // 4. Send verification data to Google Sheets via GAS Web App
-    // Note: Please replace this placeholder URL with your actual deployed Web App URL from Apps Script.
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxoq6Vq27t1XlHptUo1S5K43F24_Z9ny9NiKVkAdoc/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzCCQ7prtYsLaHKNODem4hBho0-RnCABFXOoYaAcZtmWsHfD-N19y8pBj7xS9IVEEis/exec";
     
-    if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes("exec")) {
+    if (GAS_WEB_APP_URL && GAS_WEB_APP_URL.startsWith("https://")) {
       try {
         fetch(GAS_WEB_APP_URL, {
           method: 'POST',
