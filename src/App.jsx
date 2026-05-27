@@ -11,13 +11,13 @@ function App() {
   const editorRef = useRef(null);
   const dragHandleRef = useRef(null);
   
-  const { state, loadState } = useStore();
+  const { state, loadState, resetState } = useStore();
   const isFirstLoad = useRef(true);
 
   // User Verification State
-  const [isVerified, setIsVerified] = useState(() => {
-    return localStorage.getItem('sales_page_user_verified') === 'true';
-  });
+  const [isVerified, setIsVerified] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [verifying, setVerifying] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '' });
   const nameInputRef = useRef(null);
   const emailInputRef = useRef(null);
@@ -48,64 +48,89 @@ function App() {
       return;
     }
 
-    // 3. Mark as verified locally
-    try {
-      localStorage.setItem('sales_page_user_verified', 'true');
-    } catch (err) {
-      console.warn("Failed to save verified state to localStorage:", err);
-    }
-    setIsVerified(true);
-    toast.success("驗證成功！已解鎖銷售頁生成器所有功能。");
-
-    // 4. Send verification data to Google Sheets via GAS Web App
+    setVerifying(true);
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzCCQ7prtYsLaHKNODem4hBho0-RnCABFXOoYaAcZtmWsHfD-N19y8pBj7xS9IVEEis/exec";
-    
-    if (GAS_WEB_APP_URL && GAS_WEB_APP_URL.startsWith("https://")) {
-      try {
-        fetch(GAS_WEB_APP_URL, {
-          method: 'POST',
-          mode: 'no-cors', // Avoids CORS errors; Apps Script will still receive the data successfully
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ name, email })
-        });
-      } catch (err) {
-        console.error("Failed to send data to Google Apps Script:", err);
+
+    try {
+      // Fetch user list from spreadsheet via Apps Script GET
+      const response = await fetch(GAS_WEB_APP_URL);
+      if (!response.ok) {
+        throw new Error("HTTP error connecting to sheet");
       }
+      const users = await response.json();
+
+      if (users && Array.isArray(users)) {
+        // Find if user exists with matching name and email (case-insensitive)
+        const matched = users.find(
+          u => u.name.toString().trim().toLowerCase() === name.toLowerCase() &&
+               u.email.toString().trim().toLowerCase() === email.toLowerCase()
+        );
+
+        if (matched) {
+          setCurrentUser({ name: matched.name, email: matched.email });
+          setIsVerified(true);
+          toast.success(`驗證成功！歡迎 ${matched.name} 登入。`);
+        } else {
+          alert("驗證失敗，請重新輸入！");
+        }
+      } else {
+        alert("驗證失敗，無法解析伺服器使用者資料。");
+      }
+    } catch (err) {
+      console.error("Failed to verify user against spreadsheet:", err);
+      alert("驗證失敗，無法連線至驗證伺服器，請檢查網路連線或 Apps Script 部署狀態！");
+    } finally {
+      setVerifying(false);
     }
   };
 
-  // Load auto-saved draft on mount
-  useEffect(() => {
-    try {
-      const savedDraft = localStorage.getItem('sales_page_autosave_v2');
-      if (savedDraft) {
-        const parsed = JSON.parse(savedDraft);
-        if (parsed && typeof parsed === 'object' && parsed.hero) {
-          loadState(parsed);
-          toast.success('已自動載入您上次編輯的最新紀錄！');
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load auto-saved draft:', e);
-    }
-  }, [loadState]);
+  const handleLogout = () => {
+    setIsVerified(false);
+    setCurrentUser(null);
+    setFormData({ name: '', email: '' });
+    toast.success("已成功登出系統。");
+  };
 
-  // Auto-save draft on state change
+  // Load user draft when user logs in/verifies
   useEffect(() => {
+    if (isVerified && currentUser) {
+      try {
+        const userDraftKey = `sales_page_autosave_v2_${currentUser.email}`;
+        const savedDraft = localStorage.getItem(userDraftKey);
+        if (savedDraft) {
+          const parsed = JSON.parse(savedDraft);
+          if (parsed && typeof parsed === 'object' && parsed.hero) {
+            loadState(parsed);
+            toast.success(`已自動載入 ${currentUser.name} 的專屬編輯紀錄！`);
+            return;
+          }
+        }
+        // If no draft is saved under this user, load the default template
+        resetState();
+      } catch (e) {
+        console.error('Failed to load user draft:', e);
+      }
+    }
+  }, [isVerified, currentUser, loadState, resetState]);
+
+  // Auto-save draft on state change, specifically for the logged-in user
+  useEffect(() => {
+    if (!isVerified || !currentUser) return;
+    
     if (isFirstLoad.current) {
       isFirstLoad.current = false;
       return;
     }
+
     if (state) {
       try {
-        localStorage.setItem('sales_page_autosave_v2', JSON.stringify(state));
+        const userDraftKey = `sales_page_autosave_v2_${currentUser.email}`;
+        localStorage.setItem(userDraftKey, JSON.stringify(state));
       } catch (e) {
-        console.warn('Auto-save to localStorage failed (quota exceeded):', e);
+        console.warn('Auto-save to localStorage failed:', e);
       }
     }
-  }, [state]);
+  }, [state, isVerified, currentUser]);
 
   useEffect(() => {
     const handle = dragHandleRef.current;
@@ -150,7 +175,7 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-50 text-slate-900">
-      <Header />
+      <Header currentUser={currentUser} onLogout={handleLogout} />
       
       <div ref={containerRef} className="flex-1 flex relative overflow-hidden bg-slate-50" id="main-container">
         
@@ -183,7 +208,7 @@ function App() {
               </div>
               <h2 className="text-lg font-black text-slate-800">歡迎使用銷售頁生成器</h2>
               <p className="text-xs text-slate-500">
-                請輸入您的基本資料完成驗證以開始使用本工具。
+                請輸入您的基本資料進行登入以開始使用本工具。
               </p>
             </div>
 
@@ -197,7 +222,7 @@ function App() {
                   ref={nameInputRef}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="例如：Wing"
+                  placeholder=""
                   className="w-full shadow-sm rounded-lg py-3 px-4 text-gray-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#048BBA] focus:border-transparent transition-all text-sm"
                 />
               </div>
@@ -211,23 +236,26 @@ function App() {
                   ref={emailInputRef}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="例如：zxc1425638@gmail.com"
+                  placeholder=""
                   className="w-full shadow-sm rounded-lg py-3 px-4 text-gray-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#048BBA] focus:border-transparent transition-all text-sm"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 bg-[#2a4189] hover:bg-[#2a4189]/90 text-white font-bold rounded-lg transition-all shadow-md text-sm hover:scale-[1.01] active:scale-[0.99]"
+                disabled={verifying}
+                className="w-full py-3 bg-[#2a4189] hover:bg-[#2a4189]/90 text-white font-bold rounded-lg transition-all shadow-md text-sm hover:scale-[1.01] active:scale-[0.99] disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                立即驗證並開始使用
+                {verifying ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    正在驗證帳號...
+                  </>
+                ) : (
+                  "立即登入並開始使用"
+                )}
               </button>
             </form>
-
-            <div className="text-[10px] text-slate-400 text-center leading-relaxed">
-              驗證通過後資料將自動記錄至 Google 試算表。<br />
-              （若已完成 Apps Script 部署，可更換 <code>App.jsx</code> 中的 <code>GAS_WEB_APP_URL</code>）
-            </div>
           </div>
         </div>
       )}

@@ -243,17 +243,213 @@ export default function AiGenerator() {
     ];
 
     let step = 0;
-    const interval = setInterval(() => {
+    const loadingInterval = setInterval(() => {
       step = (step + 1) % loadingSteps.length;
       setLoadingText(loadingSteps[step]);
     }, 2500);
 
-    // Simulate API delay for backup generation
-    setTimeout(() => {
-      clearInterval(interval);
+    const courseName = state.meta?.courseName || '數位顧問培訓班';
+    const transformation = state.meta?.transformation || '節省時間，專心發展事業';
+    const audience = state.meta?.audience || '一人公司經營者';
+    const style = state.meta?.style || '';
+    const filesText = uploadedFiles.length > 0
+      ? uploadedFiles.map(f => `[檔案：${f.name}]\n${f.text}`).join('\n\n')
+      : '無參考檔案。';
+
+    const apiKey = "AIzaSyBgUlpyCC0J4tEkA1PYusCV7--HkIIy2Gc";
+    const promptText = `你是一位頂尖的行銷文案大師。請為以下產品撰寫完整的銷售頁（Landing Page）文案：
+課程/產品名稱：${courseName}
+帶給學生的具體轉變與成果：${transformation}
+目標受眾：${audience}
+品牌網站資訊/背景說明：${style}
+參考上傳檔案內容：
+${filesText}
+
+請將文案撰寫成符合以下 JSON 格式的資料，請不要有任何 markdown 格式的程式碼區塊標記 (例如 \`\`\`json) 或任何其他說明文字，必須是純 JSON 物件：
+
+{
+  "meta": {
+    "painTitleMain": "針對受眾的一人公司營運/生活瓶頸或痛點的主標題",
+    "currTitleMain": "大綱/核心服務的標題",
+    "qualTitleMain": "適合誰/篩選條件的標題",
+    "testTitleMain": "見證/好評的標題",
+    "priceTitleMain": "定價/方案的標題",
+    "faqTitleMain": "常見問答的標題"
+  },
+  "brandInfo": {
+    "brandName": "品牌或學院名稱",
+    "aboutTitle": "關於團隊/創辦人的標題",
+    "aboutText": "團隊或創辦人簡介文案，說明使命以及如何幫助受眾",
+    "contactEmail": "support@example.com",
+    "contactLine": "@line_id"
+  },
+  "hero": {
+    "title": "主視覺超強吸引力主標題 (可用 \\n 換行，字數約 20-30 字，強調痛點解決或驚人轉變)",
+    "bullets": [
+      { "text": "吸引人的亮點/承諾 1" },
+      { "text": "吸引人的亮點/承諾 2" },
+      { "text": "吸引人的亮點/承諾 3" }
+    ]
+  },
+  "painPoints": [
+    { "title": "痛點 1 標題", "desc": "痛點 1 詳細描述" },
+    { "title": "痛點 2 標題", "desc": "痛點 2 詳細描述" },
+    { "title": "痛點 3 標題", "desc": "痛點 3 詳細描述" }
+  ],
+  "empathy": {
+    "quote": "創辦人或金句引用「...」 (可用 \\n 換行)",
+    "text": "感同身受的自白文案，說明自己也曾經歷同樣痛苦，直到發現了解決方案"
+  },
+  "transition": {
+    "title": "思維翻轉/對比區塊標題",
+    "cards": [
+      { "title": "傳統/錯誤的舊做法", "desc": "舊做法的弊端" },
+      { "title": "高效/我們的新系統做法", "desc": "新做法的優勢與回報" }
+    ]
+  },
+  "promise": {
+    "title": "加入/使用後能獲得的具體改變標題",
+    "items": [
+      { "text": "具體改變/好處 1" },
+      { "text": "具體改變/好處 2" },
+      { "text": "具體改變/好處 3" }
+    ]
+  },
+  "services": {
+    "title": "核心服務/模組標題",
+    "items": [
+      { "name": "核心模組/服務 1 名稱", "desc": "詳細的描述" },
+      { "name": "核心模組/服務 2 名稱", "desc": "詳細的描述" },
+      { "name": "核心模組/服務 3 名稱", "desc": "詳細的描述" }
+    ]
+  },
+  "curriculum": [
+    { "title": "大綱/步驟階段一", "content": "詳細單元內容與實作目標" },
+    { "title": "大綱/步驟階段二", "content": "詳細單元內容與實作目標" },
+    { "title": "大綱/步驟階段三", "content": "詳細單元內容與實作目標" }
+  ],
+  "authority": {
+    "name": "專家/講師姓名",
+    "bio": "專家背景資歷簡介，強調在這個領域的成功案例或專業能力",
+    "stats": [
+      { "label": "關鍵數據 1 (例如：累積學員)", "value": "數值 (例如：3,000+ 人)" },
+      { "label": "關鍵數據 2 (例如：學員滿意度)", "value": "數值 (例如：98.5%)" }
+    ]
+  },
+  "qualification": {
+    "fit": [
+      { "text": "最適合本產品的人群特徵 1" },
+      { "text": "最適合本產品的人群特徵 2" },
+      { "text": "最適合本產品的人群特徵 3" }
+    ],
+    "unfit": [
+      { "text": "不適合本產品的人群特徵 1" },
+      { "text": "不適合本產品的人群特徵 2" }
+    ]
+  },
+  "testimonials": [
+    { "name": "見證學員 A 姓名", "role": "頭銜/角色 (例如: 自由創作者)", "content": "真實的好評內容，提及解決了什麼具體痛點，釋放了多少時間或增加了多少收入" },
+    { "name": "見證學員 B 姓名", "role": "頭銜/角色", "content": "好評內容" }
+  ],
+  "pricingPlans": [
+    {
+      "title": "初階方案名稱",
+      "originalPrice": "原始價格 (數字即可)",
+      "currentPrice": "優惠特價 (數字即可)",
+      "urgency": "急迫感標籤 (例如: 早鳥優惠剩 5 席)",
+      "features": "方案包含的特色 (用 \\n 隔開)",
+      "ctaText": "按鈕文字",
+      "ctaLink": "#",
+      "guarantee": "退費保證或信心保障文字"
+    },
+    {
+      "title": "高階方案/VIP名稱",
+      "originalPrice": "原始價格",
+      "currentPrice": "特價",
+      "urgency": "限量標籤 (例如: 每月限 3 名額)",
+      "features": "方案包含的特色 (用 \\n 隔開)",
+      "ctaText": "按鈕文字",
+      "ctaLink": "#",
+      "guarantee": "退費保證或信心保障文字"
+    }
+  ],
+  "faq": [
+    { "q": "常見問答問題 1", "a": "常見問答回覆 1" },
+    { "q": "常見問答問題 2", "a": "常見問答回覆 2" },
+    { "q": "常見問答問題 3", "a": "常見問答回覆 3" }
+  ],
+  "close": {
+    "text": "呼籲行動的感性結尾文案"
+  },
+  "cta1": { "text": "主按鈕 1 文字" },
+  "cta2": { "text": "主按鈕 2 文字" },
+  "cta3": { "text": "主按鈕 3 文字" }
+}`;
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [{ text: promptText }]
+              }
+            ],
+            generationConfig: {
+              responseMimeType: "application/json"
+            }
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (!result.candidates || result.candidates.length === 0) {
+        throw new Error("No candidates returned from Gemini API");
+      }
+
+      const text = result.candidates[0].content.parts[0].text;
+      let jsonText = text.trim();
+      if (jsonText.startsWith("```")) {
+        jsonText = jsonText.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+      }
+      
+      const cleanJson = JSON.parse(jsonText);
+      
+      if (cleanJson) {
+        Object.keys(cleanJson).forEach(sectionKey => {
+          if (typeof cleanJson[sectionKey] === 'object' && !Array.isArray(cleanJson[sectionKey])) {
+            Object.keys(cleanJson[sectionKey]).forEach(fieldKey => {
+              updateStateByPath(`${sectionKey}.${fieldKey}`, cleanJson[sectionKey][fieldKey]);
+            });
+          } else {
+            updateStateByPath(sectionKey, cleanJson[sectionKey]);
+          }
+        });
+        toast.success("✨ AI 一鍵生成銷售頁文案成功！");
+      } else {
+        throw new Error("Parsed JSON is empty");
+      }
+    } catch (err) {
+      console.warn("Gemini API error, falling back to local generator:", err);
       runBackupLocalGeneration();
+      toast.error("⚠️ AI 連線失敗或格式不合，已自動啟用本地備用智慧生成系統。");
+    } finally {
+      clearInterval(loadingInterval);
       setLoading(false);
-    }, 6000);
+    }
+  };
+
+  const handleGenerateClick = () => {
+    handleGenerate();
   };
 
   return (
@@ -308,14 +504,14 @@ export default function AiGenerator() {
         </div>
 
         <button 
-          onClick={handleGenerate} 
+          onClick={handleGenerateClick} 
           disabled={loading}
           className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-center shadow-md transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
         >
             {loading ? (
               <><Loader2 size={16} className="animate-spin" /> {loadingText}</>
             ) : (
-              <><Wand2 size={16} /> 智慧分析一鍵生成銷售頁文案 (免Key)</>
+              <><Wand2 size={16} /> 一鍵生成銷售頁文案</>
             )}
         </button>
     </div>
