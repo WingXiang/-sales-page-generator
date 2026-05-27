@@ -52,8 +52,12 @@ function App() {
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx4Txf0H6UkPSgvIdqsSOG5y4Ois7cqqHf7E1QJEssRerrXd-PRL6xMTBM82LyR7mch/exec";
 
     try {
-      // Fetch user list from spreadsheet via Apps Script GET
-      const response = await fetch(GAS_WEB_APP_URL);
+      // Fetch user list from spreadsheet via Apps Script GET (omit credentials to avoid Google multi-account login CORS conflicts)
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'omit'
+      });
       if (!response.ok) {
         throw new Error("HTTP error connecting to sheet");
       }
@@ -78,7 +82,7 @@ function App() {
       }
     } catch (err) {
       console.error("Failed to verify user against spreadsheet:", err);
-      alert("驗證失敗，無法連線至驗證伺服器，請檢查網路連線或 Apps Script 部署狀態！");
+      alert(`驗證失敗，無法連線至驗證伺服器：\n${err.message || err}\n請檢查網路連線、Apps Script 部署狀態，或嘗試使用無痕視窗開啟！`);
     } finally {
       setVerifying(false);
     }
