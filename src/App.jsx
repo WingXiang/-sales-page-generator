@@ -60,9 +60,9 @@ function App() {
       const users = await response.json();
 
       if (users && Array.isArray(users)) {
-        // Find if user exists with matching name and email (case-insensitive)
         const matched = users.find(
-          u => u.name.toString().trim().toLowerCase() === name.toLowerCase() &&
+          u => u && u.name && u.email &&
+               u.name.toString().trim().toLowerCase() === name.toLowerCase() &&
                u.email.toString().trim().toLowerCase() === email.toLowerCase()
         );
 

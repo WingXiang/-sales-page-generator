@@ -1,5 +1,5 @@
 /**
- * Google Apps Script - 銷售頁生成器使用者驗證串接
+ * Google Apps Script - 銷售頁生成器使用者驗證串接 (已修正版)
  * 
  * 部署步驟：
  * 1. 開啟您的試算表：https://docs.google.com/spreadsheets/d/1KOLbxQvhTo1wbMWnG_bW5YmhOYNwJ27VsYwy9NiKVkA/edit?gid=86038572#gid=86038572
@@ -13,13 +13,6 @@
  */
 
 function doPost(e) {
-  // 設定 CORS 回應標頭，允許跨域請求
-  var headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type"
-  };
-
   try {
     var name = "";
     var email = "";
@@ -40,8 +33,7 @@ function doPost(e) {
         status: "error", 
         message: "姓名或信箱欄位不可為空！" 
       }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders(headers);
+      .setMimeType(ContentService.MimeType.JSON);
     }
 
     // 開啟特定的試算表
@@ -50,45 +42,25 @@ function doPost(e) {
     var sheet = ss.getSheets()[0]; // 寫入第一個工作表
 
     // 寫入欄位資料：姓名 OR 暱稱, 信箱
-    sheet.appendRow([name, email]);
+    sheet.appendRow([name.toString().trim(), email.toString().trim()]);
 
     return ContentService.createTextOutput(JSON.stringify({ 
       status: "success", 
       message: "驗證登錄成功！" 
     }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(headers);
+    .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ 
       status: "error", 
       message: error.toString() 
     }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(headers);
+    .setMimeType(ContentService.MimeType.JSON);
   }
-}
-
-// 處理 OPTIONS 預檢請求
-function doOptions(e) {
-  var headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type"
-  };
-  return ContentService.createTextOutput("")
-    .setMimeType(ContentService.MimeType.TEXT)
-    .setHeaders(headers);
 }
 
 // 處理 GET 請求以供登出/登入驗證比對
 function doGet(e) {
-  var headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type"
-  };
-
   try {
     var sheetId = "1KOLbxQvhTo1wbMWnG_bW5YmhOYNwJ27VsYwy9NiKVkA";
     var ss = SpreadsheetApp.openById(sheetId);
@@ -106,15 +78,13 @@ function doGet(e) {
     }
 
     return ContentService.createTextOutput(JSON.stringify(users))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders(headers);
+      .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ 
       status: "error", 
       message: error.toString() 
     }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(headers);
+    .setMimeType(ContentService.MimeType.JSON);
   }
 }
