@@ -49,7 +49,7 @@ function App() {
     }
 
     setVerifying(true);
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzCCQ7prtYsLaHKNODem4hBho0-RnCABFXOoYaAcZtmWsHfD-N19y8pBj7xS9IVEEis/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyjW7XC4UDB78lmYtbvn_YyrpI5yG-XN6tfOXDA3n6RfqPIN86aa5ORmH0g7B58iQxu/exec";
 
     try {
       // Fetch user list from spreadsheet via Apps Script GET
