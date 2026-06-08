@@ -136,10 +136,10 @@ export default function ComplianceTab() {
             </div>
           ))}
         </div>
-        <p className="text-sm text-amber-800 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 leading-relaxed font-medium">
+        <div className="text-sm text-amber-800 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 leading-relaxed font-medium">
           <AlertTriangle size={16} className="shrink-0 mt-0.5" />
-          標示 <span className="font-black">「範例·待更換」</span> 的欄位目前為虛擬示範資料；改成你的真實內容後會變為 <span className="font-black text-emerald-700">「已修改」</span>。統一編號、客服電話等為金流審核必填項，送審前請務必全部改成真實資料。
-        </p>
+          <p>標示 <span className="font-black">「範例·待更換」</span> 的欄位目前為虛擬示範資料；改成你的真實內容後會變為 <span className="font-black text-emerald-700">「已修改」</span>。統一編號、客服電話等為金流審核必填項，送審前請務必全部改成真實資料。</p>
+        </div>
       </div>
 
       {/* 版權聲明（不需填寫，依商家資訊自動產生） */}

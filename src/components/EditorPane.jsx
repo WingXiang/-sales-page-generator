@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useStore } from '../store/useStore';
 import { Settings, Layers, LayoutTemplate, ShieldCheck, Images } from 'lucide-react';
 
@@ -68,15 +69,16 @@ export default function EditorPane() {
         {!['core', 'advanced', 'imageBlocks', 'layout', 'compliance'].includes(activeTab) && <CoreTab />}
       </div>
 
-      {/* 滑鼠旁浮動說明 */}
-      {tip && (
+      {/* 滑鼠旁浮動說明（portal 到 body，避免被預覽區覆蓋） */}
+      {tip && createPortal(
         <div
-          className="fixed z-[60] pointer-events-none max-w-[260px] bg-slate-900 text-white text-[11px] leading-relaxed rounded-lg shadow-xl px-3 py-2"
+          className="fixed z-[9999] pointer-events-none max-w-[260px] bg-slate-900 text-white text-[11px] leading-relaxed rounded-lg shadow-2xl px-3 py-2"
           style={{ left: Math.min(tip.x + 16, (typeof window !== 'undefined' ? window.innerWidth : 9999) - 280), top: tip.y + 18 }}
         >
           <div className="font-black text-[11px] mb-0.5 text-amber-300">{tip.label}</div>
           {tip.text}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
