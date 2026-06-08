@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../../store/useStore';
-import { Building, Image as ImageIcon, Frown, Cuboid, Tags, Plus, Trash2, GripVertical, MousePointer } from 'lucide-react';
+import { Building, Image as ImageIcon, Frown, Cuboid, Tags, Plus, Trash2, GripVertical, MousePointer, ClipboardList } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import AiGenerator from './AiGenerator';
 import ImageUploadField from './ImageUploadField';
@@ -10,8 +10,9 @@ const coreMenuItems = [
   { id: 'hero', label: '2. 主視覺與承諾', icon: <ImageIcon size={20} /> },
   { id: 'painPoints', label: '3. 痛點共鳴', icon: <Frown size={20} /> },
   { id: 'services', label: '4. 優勢好處', icon: <Cuboid size={20} /> },
-  { id: 'pricingPlans', label: '5. 定價方案', icon: <Tags size={20} /> },
-  { id: 'ctas', label: '6. 行動呼籲按鈕設定', icon: <MousePointer size={20} /> }
+  { id: 'courseInfo', label: '5. 課程資訊', icon: <ClipboardList size={20} /> },
+  { id: 'pricingPlans', label: '6. 定價方案', icon: <Tags size={20} /> },
+  { id: 'ctas', label: '7. 行動呼籲按鈕設定', icon: <MousePointer size={20} /> }
 ];
 
 export default function CoreTab() {
@@ -228,6 +229,36 @@ export default function CoreTab() {
               </div>
             </>
         );
+        case 'courseInfo': {
+            const ci = state.courseInfo || {};
+            const ciField = (label, key, placeholder) => (
+              <div>
+                <label className={labelClass}>{label}</label>
+                <input
+                  type="text"
+                  value={ci[key] || ''}
+                  onChange={(e) => updateStateByPath(`courseInfo.${key}`, e.target.value)}
+                  onFocus={() => handleFocus(`courseInfo.${key}`)}
+                  onBlur={handleBlur}
+                  className={inputClass}
+                  placeholder={placeholder}
+                />
+              </div>
+            );
+            return (
+              <>
+                <p className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg p-2.5 leading-relaxed">
+                  金流審核需要清楚的課程資訊，以下會以表格呈現於銷售頁。請填寫真實內容。
+                </p>
+                {ciField('區塊標題', 'title', '課程資訊')}
+                {ciField('課程名稱', 'courseName', '例如：數位顧問培訓班')}
+                {ciField('課程堂數', 'lessonCount', '例如：12 堂（共 3 階段）')}
+                {ciField('課堂總時數', 'totalHours', '例如：約 8 小時')}
+                {ciField('觀看期限（履約期間）', 'accessPeriod', '例如：購買後一年內不限次數觀看')}
+                {ciField('收看方式／軟體', 'platform', '例如：線上影音隨選；直播課程使用 Zoom')}
+              </>
+            );
+        }
         case 'pricingPlans': return (
             <>
               <div>

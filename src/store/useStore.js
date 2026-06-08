@@ -76,6 +76,14 @@ const TEMPLATE_COURSE = {
     { title: '第二階段：無代碼數位工具實戰串接', content: '手把手教您串接預約、Email通知與客戶管理系統\n實現24小時無人值守自動運作' },
     { title: '第三階段：高價值顧問服務包裝與規模化', content: '顧問收費模式與定價策略\n利用自動化系統高效獲客與交付' }
   ],
+  courseInfo: {
+    title: '課程資訊',
+    courseName: '數位顧問培訓班',
+    lessonCount: '12 堂（共 3 階段）',
+    totalHours: '約 8 小時',
+    accessPeriod: '購買後一年內，不限次數重複觀看',
+    platform: '線上影音隨選，支援電腦／手機／平板（如為直播課程則使用 Zoom）'
+  },
   authority: {
     image: 'https://i.ibb.co/NgG55zqk/portrait-1771585005753.png',
     name: '陳相銘 ( Wing )',
@@ -146,7 +154,7 @@ const TEMPLATE_COURSE = {
   cta1: { text: '👉 立即報名', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' }, 
   cta2: { text: '立即加入，開啟自動化營運', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' }, 
   cta3: { text: '現在加入，專注發展核心事業', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' }, 
-  layout: ['hero', 'cta1', 'painPoints', 'empathy', 'transition', 'promise', 'services', 'cta2', 'curriculum', 'about', 'authority', 'qualification', 'testimonials', 'pricingPlans', 'faq', 'close', 'cta3', 'complianceFooter'],
+  layout: ['hero', 'cta1', 'painPoints', 'empathy', 'transition', 'promise', 'services', 'cta2', 'curriculum', 'courseInfo', 'about', 'authority', 'qualification', 'testimonials', 'pricingPlans', 'faq', 'close', 'cta3', 'complianceFooter'],
   customStyles: {},
   elementStyles: { desktop: {}, tablet: {}, mobile: {} }
 };
@@ -340,6 +348,14 @@ export const useStore = create((set) => ({
     // the user's own show/hide choice in 佈局排序.
     if (!hadCompliance && Array.isArray(merged.layout) && !merged.layout.includes('complianceFooter')) {
       merged.layout = [...merged.layout, 'complianceFooter'];
+    }
+    // Backfill 課程資訊 for drafts saved before it existed.
+    const hadCourseInfo = !!merged.courseInfo;
+    if (!merged.courseInfo) merged.courseInfo = JSON.parse(JSON.stringify(TEMPLATE_COURSE.courseInfo));
+    if (!hadCourseInfo && Array.isArray(merged.layout) && !merged.layout.includes('courseInfo')) {
+      const idx = merged.layout.indexOf('pricingPlans');
+      if (idx >= 0) merged.layout.splice(idx, 0, 'courseInfo');
+      else merged.layout.push('courseInfo');
     }
     return { state: merged };
   }),

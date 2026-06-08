@@ -12,6 +12,7 @@ const BLOCK_METADATA = {
     services: { label: '優勢好處', desc: '產品核心特色' },
     cta2: { label: '行動呼籲 2 (按鈕)', desc: '優勢特色下方按鈕' },
     curriculum: { label: '單元大綱', desc: '課程或服務細節' },
+    courseInfo: { label: '課程資訊', desc: '時數、堂數、履約期間、收看方式' },
     about: { label: '品牌故事', desc: '創辦人與理念' },
     authority: { label: '專家權威', desc: '數據與信任感' },
     qualification: { label: '客群篩選', desc: '適合與不適合' },
