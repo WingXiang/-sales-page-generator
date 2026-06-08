@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useStore } from '../../store/useStore';
 import { Heart, RefreshCw, ShieldCheck, BookOpen, GraduationCap, Users, Star, HelpCircle, ArrowRight, Plus, Trash2, GripVertical } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -17,8 +17,10 @@ const advancedItems = [
 ];
 
 export default function AdvancedTab() {
-  const { state, updateField, updateMeta, updateStateByPath } = useStore();
-  const [activeExpanded, setActiveExpanded] = useState(null);
+  const { state, updateField, updateMeta, updateStateByPath, activeExpandedSection, setActiveExpandedSection } = useStore();
+  // 展開狀態以 store 為準，讓「點預覽元素 → 左側跳到對應區塊」可運作
+  const activeExpanded = activeExpandedSection;
+  const setActiveExpanded = setActiveExpandedSection;
 
   const activeAdvancedItems = advancedItems;
 

@@ -11,7 +11,7 @@ export default function Header({ currentUser, onLogout }) {
           <img src="https://i.ibb.co/qYHbR1VS/LOG.png" alt="Logo" className="h-7 w-auto object-contain" />
         </span>
         <div>
-          <span className="font-black text-base md:text-lg tracking-wider text-slate-800">銷售頁產生器 PRO</span>
+          <span className="font-black text-base md:text-lg tracking-wider text-slate-800">銷售頁產生器</span>
         </div>
       </div>
       

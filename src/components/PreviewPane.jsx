@@ -4,8 +4,46 @@ import { Monitor, Tablet, Smartphone, Palette } from 'lucide-react';
 import { generateInnerHTMLContent } from '../utils/templateGenerator';
 import FloatingToolbar from './editor/FloatingToolbar';
 
+// 把預覽中被點擊元素的 data-live-path 對應到左側編輯分頁與展開區塊
+const META_TARGET = {
+  painTitleMain: { tab: 'core', section: 'painPoints' },
+  priceTitleMain: { tab: 'core', section: 'pricingPlans' },
+  currTitleMain: { tab: 'advanced', section: 'curriculum' },
+  qualTitleMain: { tab: 'advanced', section: 'qualification' },
+  testTitleMain: { tab: 'advanced', section: 'testimonials' },
+  faqTitleMain: { tab: 'advanced', section: 'faq' },
+};
+const SEG_TARGET = {
+  hero: { tab: 'core', section: 'hero' },
+  painPoints: { tab: 'core', section: 'painPoints' },
+  services: { tab: 'core', section: 'services' },
+  pricingPlans: { tab: 'core', section: 'pricingPlans' },
+  courseInfo: { tab: 'core', section: 'courseInfo' },
+  brandInfo: { tab: 'core', section: 'brand' },
+  cta1: { tab: 'core', section: 'ctas' },
+  cta2: { tab: 'core', section: 'ctas' },
+  cta3: { tab: 'core', section: 'ctas' },
+  empathy: { tab: 'advanced', section: 'empathy' },
+  transition: { tab: 'advanced', section: 'transition' },
+  promise: { tab: 'advanced', section: 'promise' },
+  curriculum: { tab: 'advanced', section: 'curriculum' },
+  authority: { tab: 'advanced', section: 'authority' },
+  qualification: { tab: 'advanced', section: 'qualification' },
+  testimonials: { tab: 'advanced', section: 'testimonials' },
+  faq: { tab: 'advanced', section: 'faq' },
+  close: { tab: 'advanced', section: 'close' },
+  compliance: { tab: 'compliance', section: null },
+  imageBlocks: { tab: 'imageBlocks', section: null },
+};
+function pathToEditTarget(path) {
+  if (!path) return null;
+  const parts = path.split('.');
+  if (parts[0] === 'meta') return META_TARGET[parts[1]] || null;
+  return SEG_TARGET[parts[0]] || null;
+}
+
 export default function PreviewPane() {
-  const { state, deviceMode, setDeviceMode, updateStateByPath, applyTheme, setActiveModal } = useStore();
+  const { state, deviceMode, setDeviceMode, updateStateByPath, applyTheme, setActiveModal, setActiveTab, setActiveExpandedSection } = useStore();
   const iframeRef = useRef(null);
   const [activeElement, setActiveElement] = useState(null);
   const ignoreNextUpdateRef = useRef(false);
@@ -246,6 +284,12 @@ export default function PreviewPane() {
                   iframeRect: { top: iframeRect.top, left: iframeRect.left }
                });
             }
+            // 左右對照：點預覽元素 → 左側編輯器跳到對應分頁與區塊
+            const target = pathToEditTarget(e.data.path);
+            if (target) {
+              setActiveTab(target.tab);
+              setActiveExpandedSection(target.section);
+            }
         } else {
             setActiveElement(null);
         }
@@ -253,7 +297,7 @@ export default function PreviewPane() {
     };
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [updateStateByPath]);
+  }, [updateStateByPath, setActiveTab, setActiveExpandedSection]);
 
   useEffect(() => {
     if (iframeRef.current) {
