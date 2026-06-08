@@ -475,10 +475,10 @@ export function generateInnerHTMLContent(state, deviceMode) {
                 ` : '';
 
                 const policy = (title, path, text) => (text && text.trim()) ? `
-                    <details class="border-t border-slate-200/60 py-3 group">
-                        <summary class="font-bold text-sm flex items-center justify-between cursor-pointer list-none select-none outline-none opacity-90">
-                            <span>${title}</span>
-                            <span class="transition-transform duration-300 group-open:rotate-180 shrink-0 font-bold">＋</span>
+                    <details class="border-t border-slate-200/70 first:border-t-0 py-3.5 group">
+                        <summary class="font-bold text-sm flex items-center justify-between cursor-pointer list-none select-none outline-none text-primary">
+                            <span class="flex items-center gap-2"><span class="inline-block w-1 h-4 bg-accent rounded-full"></span>${title}</span>
+                            <span class="transition-transform duration-300 group-open:rotate-180 shrink-0 font-black text-accent">＋</span>
                         </summary>
                         <p data-live-path="${path}" class="text-xs leading-relaxed opacity-70 pt-3 whitespace-pre-line">${nl2br(text)}</p>
                     </details>
@@ -499,20 +499,22 @@ export function generateInnerHTMLContent(state, deviceMode) {
 
                 html += `
                     <!-- 金流合規頁尾：商家資訊與法律政策 -->
-                    <footer id="section-complianceFooter" class="border-t-2 border-slate-200 pt-12 mt-8 text-slate-600 animate-fade-in transition-all duration-300">
+                    <footer id="section-complianceFooter" class="border-t-4 border-primary pt-12 mt-8 text-slate-600 animate-fade-in transition-all duration-300">
                         <div class="max-w-4xl mx-auto space-y-8">
                             <div class="space-y-4">
-                                <h3 class="text-base font-black text-primary">商家資訊</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs md:text-sm">
+                                <h3 class="text-base font-black text-primary flex items-center gap-2">
+                                    <span class="inline-block w-1.5 h-5 bg-accent rounded-full"></span>商家資訊
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2.5 text-xs md:text-sm bg-slate-50 border border-slate-200 rounded-2xl p-5 md:p-6">
                                     ${merchantRows}
                                 </div>
                             </div>
-                            <div>
+                            <div class="bg-white border border-slate-200 rounded-2xl px-5 md:px-6 py-1">
                                 ${policy('隱私權政策', 'compliance.privacyPolicy', c.privacyPolicy)}
                                 ${policy('服務條款', 'compliance.terms', c.terms)}
                                 ${policy('退換貨與退費政策', 'compliance.refundPolicy', c.refundPolicy)}
                             </div>
-                            <p class="text-center text-[11px] opacity-50 pt-4 border-t border-slate-200/60">
+                            <p class="text-center text-[11px] opacity-50 pt-2">
                                 © ${year}${copyName ? ` ${copyName}` : ''}. 版權所有 All Rights Reserved.
                             </p>
                         </div>
