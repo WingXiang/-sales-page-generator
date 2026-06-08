@@ -114,7 +114,7 @@ export default function PreviewPane() {
       </head>
       <body class="device-${deviceMode} antialiased min-h-screen transition-colors duration-200">
           <main id="capture-area" class="w-full max-w-5xl mx-auto px-6 md:px-12 lg:px-16 py-16 md:py-24 space-y-32">
-              ${generateInnerHTMLContent(state, deviceMode)}
+              ${generateInnerHTMLContent(state, deviceMode, true)}
           </main>
           <script>
             // Allow clicking to edit
@@ -134,10 +134,35 @@ export default function PreviewPane() {
                 }
             });
 
+            // Show/hide a legal-doc full-page overlay (preview equivalent of the
+            // exported page's #hash navigation, which can't run via injected scripts)
+            function showLegalDoc(id) {
+                document.querySelectorAll('.legal-doc').forEach(function (d) {
+                    d.style.display = (d.id === id) ? 'block' : 'none';
+                });
+                document.body.style.overflow = id ? 'hidden' : '';
+                if (id) {
+                    window.scrollTo(0, 0);
+                    var doc = document.getElementById(id);
+                    if (doc) doc.scrollTop = 0;
+                }
+            }
+
             document.addEventListener('click', (e) => {
-                // Ignore clicks on links so it doesn't navigate
-                if (e.target.closest('a')) {
+                const link = e.target.closest('a');
+                if (link) {
                     e.preventDefault();
+                    // 返回銷售頁
+                    if (link.classList.contains('legal-back')) {
+                        showLegalDoc(null);
+                        return;
+                    }
+                    // 開啟政策全頁
+                    const href = link.getAttribute('href') || '';
+                    if (href.indexOf('#doc-') === 0) {
+                        showLegalDoc(href.slice(1));
+                        return;
+                    }
                 }
                 const target = e.target.closest('[data-live-path]');
                 if (target) {
@@ -242,7 +267,7 @@ export default function PreviewPane() {
         }
         iframeRef.current.contentWindow.postMessage({
             type: 'UPDATE_HTML',
-            html: generateInnerHTMLContent(state, deviceMode),
+            html: generateInnerHTMLContent(state, deviceMode, true),
             theme: state.theme,
             deviceMode: deviceMode
         }, '*');
