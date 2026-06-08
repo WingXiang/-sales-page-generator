@@ -73,8 +73,8 @@ vercel --prod            # 正式部署
 > 前端的 `VITE_AI_PROXY_URL` 留空即可（預設打同源 `/api/generate`）。
 > 若代理未部署或連線失敗，AI 生成會自動降級為「本地備用智慧生成系統」，不影響其他功能。
 
-> **遷移提醒：** 改用 Vercel 後，可在 GitHub 倉庫 **Settings → Pages** 停用 GitHub Pages，
-> 或移除 `.github/workflows/deploy.yml` 以避免兩邊同時部署造成混淆。
+> **註：** 本專案已改用 Vercel 部署，原 GitHub Pages 的 `.github/workflows/deploy.yml` 已移除。
+> 若 GitHub 倉庫的 Pages 仍為啟用狀態，可至 **Settings → Pages** 一併停用。
 
 ---
 
@@ -99,39 +99,8 @@ vercel --prod            # 正式部署
 
 ---
 
-## 🤖 靜態部署至 GitHub Pages
+## 🌐 線上部署
 
-本專案已內建自動化部署的 GitHub Actions 腳本。每當您推送更新至 `main` 分支時，系統會自動編譯並部署至 GitHub Pages。
-
-### 🔧 部署前置設定
-
-1. **啟用 Action 寫入權限**：
-   - 進入 GitHub 專案倉庫 (Repository) 頁面。
-   - 點選右上角的 **Settings** ⚙️。
-   - 在左側選單點選 **Actions** -> **General**。
-   - 滾動至下方 **Workflow permissions**，勾選 🔘 **Read and write permissions**，並點選 **Save** 保存。
-2. **設定 GitHub Secrets (選用)**：
-   - 如果您需要自訂 `VITE_BASE_PATH`，請至專案 Settings -> **Secrets and variables** -> **Actions**。
-   - 點選 **New repository secret**，新增名稱為 `VITE_BASE_PATH` 的變數，並填入您的子路徑網址（例如 `/<your-repo-name>/`）。
-   - *提示：如果未設定，GitHub Actions 預設會使用 `./` 相對路徑編譯，即可完美相容並正確載入所有樣式。*
-
-### 🚀 部署操作流程
-
-1. **提交代碼並推送到 GitHub**：
-   - 在本地終端執行提交（已為您在 master/main 初始化並提交）：
-     ```bash
-     git add .
-     git commit -m "feat: setup env template, workflows and release configuration"
-     ```
-   - 關聯您的 GitHub 遠端倉庫並推送：
-     ```bash
-     git remote add origin https://github.com/您的帳號/您的專案名稱.git
-     git push -u origin main
-     ```
-2. **追蹤部署狀態**：
-   - 推送成功後，前往您的 GitHub 專案頁面，點選頂部選單的 **Actions** 標籤。
-   - 您會看到名為 **Deploy to GitHub Pages** 的工作流程正在執行。
-   - 綠色勾勾出現後，代表已自動部署至 `gh-pages` 分支。
-3. **查看您的線上網頁**：
-   - 部署完成後，您可以在 GitHub 專案 Settings -> **Pages** 標籤中找到您的專屬線上 URL，網址通常為：
-     `https://<您的GitHub帳號>.github.io/<您的專案名稱>/`
+本專案使用 **Vercel** 部署（前端 + AI serverless 代理一站完成），詳見上方
+[「🚀 部署到 Vercel」](#-部署到-vercelai-功能可正常運作) 章節。連結 GitHub 倉庫後，
+每次 `git push` 到 `main` 即自動重新部署。
