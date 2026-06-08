@@ -498,7 +498,7 @@ export function generateInnerHTMLContent(state, deviceMode, forPreview = false) 
                         <div class="max-w-3xl mx-auto px-6 py-12 md:py-16">
                             <div class="flex items-center justify-between gap-4 mb-8 pb-4 border-b-2 border-primary">
                                 <h1 class="text-xl md:text-2xl font-black text-primary">${d.title}</h1>
-                                <a href="#" onclick="event.preventDefault(); location.hash='';" class="legal-back text-xs md:text-sm font-bold text-primary border border-primary/30 rounded-full px-4 py-1.5 hover:bg-primary hover:text-white transition-colors shrink-0">← 返回銷售頁</a>
+                                ${forPreview ? `<a href="#" onclick="event.preventDefault(); location.hash='';" class="legal-back text-xs md:text-sm font-bold text-primary border border-primary/30 rounded-full px-4 py-1.5 hover:bg-primary hover:text-white transition-colors shrink-0">← 返回銷售頁</a>` : ''}
                             </div>
                             <div class="text-sm leading-loose opacity-80 whitespace-pre-line">${nl2br(d.text)}</div>
                             ${copyrightLine ? `<p class="mt-12 pt-6 border-t border-slate-200/60 text-[11px] opacity-50">${copyrightLine}</p>` : ''}
