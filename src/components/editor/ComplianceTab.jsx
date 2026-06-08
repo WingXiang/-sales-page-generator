@@ -57,6 +57,12 @@ export default function ComplianceTab() {
     return html;
   };
 
+  // 版權聲明直接由商家欄位即時組出（與頁面渲染邏輯一致，保證同步）
+  const mark = (val) => val
+    ? `<mark style="background:#fde68a;color:#1e293b;border-radius:3px;padding:0 3px;font-weight:600;">${escapeHtml(val)}</mark>`
+    : `<mark style="background:#fecaca;color:#991b1b;border-radius:3px;padding:0 3px;">（未填）</mark>`;
+  const copyrightHtml = `COPYRIGHT© ${mark(merchant.brandName || state.brandInfo?.brandName)} All rights reserved ${mark(merchant.companyName)}．統一編號: ${mark(merchant.taxId)}`;
+
   // 只保留「修改後真的會影響輸出」的欄位
   const merchantFields = [
     { key: 'brandName', label: '品牌名稱', placeholder: '例如：好學品牌', hint: '帶入版權與隱私權政策' },
@@ -145,7 +151,7 @@ export default function ComplianceTab() {
         </div>
         <div
           className="text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: applied(compliance.copyright) }}
+          dangerouslySetInnerHTML={{ __html: copyrightHtml }}
         />
       </div>
 

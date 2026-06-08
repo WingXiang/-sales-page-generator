@@ -491,7 +491,13 @@ export function generateInnerHTMLContent(state, deviceMode, forPreview = false) 
                     <a href="#${d.id}"${linkTarget} class="legal-link block opacity-80 hover:opacity-100 hover:text-primary transition-colors w-fit">${d.title}</a>
                 `).join('');
 
-                const copyrightLine = sub(c.copyright || '');
+                // 版權聲明直接由商家欄位即時組出（不依賴可能過期的 c.copyright）
+                const _brand = m.brandName || state.brandInfo?.brandName || '';
+                const _company = m.companyName || '';
+                const _tax = m.taxId || '';
+                const copyrightLine = (_brand || _company || _tax)
+                    ? `COPYRIGHT© ${_brand} All rights reserved ${_company}．統一編號: ${_tax}`
+                    : '';
 
                 const overlays = docs.map(d => `
                     <section id="${d.id}" class="legal-doc" style="display:none;">
