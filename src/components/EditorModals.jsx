@@ -1,9 +1,10 @@
 import { useStore } from '../store/useStore';
-import { Palette, History, CloudUpload } from 'lucide-react';
+import { Palette, History, CloudUpload, LayoutGrid } from 'lucide-react';
 import Modal from './Modal';
 import ThemeTab from './editor/ThemeTab';
 import HistoryTab from './editor/HistoryTab';
 import DeployTab from './DeployTab';
+import PageTemplates from './editor/PageTemplates';
 
 export default function EditorModals() {
   const { activeModal, setActiveModal } = useStore();
@@ -11,6 +12,13 @@ export default function EditorModals() {
 
   const close = () => setActiveModal(null);
 
+  if (activeModal === 'templates') {
+    return (
+      <Modal title="選擇銷售頁範本" icon={<LayoutGrid size={16} className="text-primary" />} onClose={close} maxWidth="max-w-lg">
+        <PageTemplates />
+      </Modal>
+    );
+  }
   if (activeModal === 'theme') {
     return (
       <Modal title="自訂配色" icon={<Palette size={16} className="text-primary" />} onClose={close} maxWidth="max-w-xl">

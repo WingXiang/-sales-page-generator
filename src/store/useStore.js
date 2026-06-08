@@ -7,7 +7,7 @@ import {
   DEFAULT_REFUND_POLICY,
 } from './complianceDefaults'
 
-const TEMPLATE_COURSE = {
+export const TEMPLATE_COURSE = {
   name: '📚 數位顧問培訓班銷售頁',
   theme: { bgColor: '#f8fafc', textColor: '#0f172a', primaryColor: '#2a4189', accentColor: '#fbbf24' },
   meta: {
