@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useStore } from '../../store/useStore';
-import { ShieldCheck, Store, FileText, RotateCcw, Lock, Info, Sparkles, Loader2, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, Store, FileText, RotateCcw, Lock, Info, Sparkles, Loader2, AlertTriangle, Scale, Copyright } from 'lucide-react';
 
 const ExampleBadge = () => (
   <span className="inline-flex items-center gap-1 text-[9px] font-black text-amber-700 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded-full">
@@ -41,19 +41,29 @@ export default function ComplianceTab() {
 
   // mustEdit: 申請金流前必須改成真實資料的範例欄位
   const merchantFields = [
-    { key: 'companyName', label: '商號／公司名稱', placeholder: '例如：好學數位有限公司', mustEdit: true },
-    { key: 'taxId', label: '統一編號', placeholder: '8 碼數字（公司戶必填）', mustEdit: true },
+    { key: 'brandName', label: '品牌名稱', placeholder: '例如：好學品牌', mustEdit: true },
+    { key: 'companyName', label: '公司全名', placeholder: '例如：好學數位有限公司', mustEdit: true },
+    { key: 'taxId', label: '統一編號', placeholder: '8 碼數字', mustEdit: true },
     { key: 'responsiblePerson', label: '負責人', placeholder: '例如：陳相銘', mustEdit: true },
     { key: 'phone', label: '客服電話', placeholder: '例如：02-1234-5678', mustEdit: true },
     { key: 'email', label: '客服信箱', placeholder: 'support@example.com', mustEdit: true },
+    { key: 'lineId', label: '官方 LINE', placeholder: '例如：@yourbrand', mustEdit: true },
+    { key: 'jurisdiction', label: '管轄／仲裁地', placeholder: '例如：臺北市', mustEdit: true },
     { key: 'serviceHours', label: '客服時間', placeholder: '例如：週一至週五 09:00-18:00', mustEdit: false },
+  ];
+
+  const policyDocs = [
+    { key: 'terms', title: '使用者條款', icon: <FileText size={16} className="text-primary" />, h: 'h-56', placeholder: '交易幣別、帳號責任、智慧財產權、準據法與管轄…' },
+    { key: 'privacyPolicy', title: '隱私權政策', icon: <Lock size={16} className="text-primary" />, h: 'h-56', placeholder: '個資定義、蒐集與使用、機密與安全、政策修訂…' },
+    { key: 'refundPolicy', title: '退費／退貨政策', icon: <RotateCcw size={16} className="text-primary" />, h: 'h-72', placeholder: '線上課程、視訊諮詢、實體課程退費規則…' },
+    { key: 'disclaimer', title: '免責聲明（中／英）', icon: <Scale size={16} className="text-primary" />, h: 'h-72', placeholder: '平台關係聲明、學習效果免責、English disclaimer…' },
   ];
 
   const generatePolicies = async () => {
     setGenLoading(true);
     const AI_PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || '/api/generate';
 
-    const brand = merchant.companyName || state.brandInfo?.brandName || '本商家';
+    const brand = merchant.brandName || state.brandInfo?.brandName || '本商家';
     const product = state.meta?.courseName || state.services?.title || '線上課程／數位內容';
     const email = merchant.email || state.brandInfo?.contactEmail || '';
 
@@ -64,9 +74,9 @@ export default function ComplianceTab() {
 
 請只輸出純 JSON（不要有任何 markdown 標記如 \`\`\`json 或說明文字），格式如下：
 {
-  "privacyPolicy": "隱私權政策全文，說明蒐集目的與項目、利用範圍、資料安全、使用者權利、Cookie",
-  "terms": "服務條款全文，說明交易幣別(新台幣)、訂購與付款、發票、智慧財產權、服務變更",
-  "refundPolicy": "退換貨與退費政策全文，須包含實體商品依消保法享七日猶豫期，以及數位內容／線上課程依通訊交易解除權合理例外情事適用準則，經消費者購買前同意後排除七日猶豫期之條款，並說明退費方式與工作天數"
+  "privacyPolicy": "隱私權政策全文",
+  "terms": "使用者條款全文，含交易幣別(新台幣)、帳號責任、智慧財產權、準據法與管轄",
+  "refundPolicy": "退費／退貨政策全文，含線上課程依通訊交易解除權合理例外準則排除七日鑑賞期之條款"
 }
 每份政策請用 \\n 換行分段。`;
 
@@ -91,11 +101,11 @@ export default function ComplianceTab() {
       if (parsed.terms) updateStateByPath('compliance.terms', parsed.terms);
       if (parsed.refundPolicy) updateStateByPath('compliance.refundPolicy', parsed.refundPolicy);
 
-      toast.success('✨ AI 已為您生成三份合規政策文案！');
+      toast.success('✨ AI 已重新生成使用者條款、隱私權與退費政策！');
       scrollToFooter();
     } catch (err) {
       console.warn('AI 政策生成失敗：', err);
-      toast.error('⚠️ AI 生成失敗，已保留現有預設政策文字，可手動編輯。');
+      toast.error('⚠️ AI 生成失敗，已保留現有政策文字，可手動編輯。');
     } finally {
       setGenLoading(false);
     }
@@ -105,15 +115,29 @@ export default function ComplianceTab() {
     <div className="space-y-6 animate-fade-in">
       <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 md:p-5 rounded-2xl border border-emerald-100 space-y-3">
         <h3 className="text-sm font-black text-emerald-900 flex items-center gap-2">
-          <ShieldCheck size={16} /> 金流申請合規資訊
+          <ShieldCheck size={16} /> 金流申請用資訊
         </h3>
         <p className="text-xs text-emerald-700 leading-relaxed">
-          綠界、藍新等台灣金流商家審核，通常要求頁面具備「商家聯絡資訊、隱私權政策、服務條款、退換貨政策」。
-          填寫以下欄位後，會自動出現在頁面最底部的合規頁尾，成品可直接送審。
+          綠界、藍新等台灣金流商家審核，通常要求頁面具備「商家聯絡資訊、使用者條款、隱私權政策、退費政策、免責聲明」。
+          填寫下方欄位後，會自動帶入頁尾與各政策內文；頁尾僅顯示簡潔連結，點擊後於新分頁開啟政策全頁。
         </p>
         <button onClick={scrollToFooter} className="text-[11px] font-bold text-emerald-700 underline underline-offset-2 hover:text-emerald-900">
-          ↓ 跳到右側預覽的合規頁尾
+          ↓ 跳到右側預覽的頁尾
         </button>
+      </div>
+
+      {/* 變數自動帶入說明 */}
+      <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 space-y-2">
+        <h4 className="text-xs font-black text-blue-900 flex items-center gap-1.5"><Info size={13} /> 變數自動帶入</h4>
+        <p className="text-[11px] text-blue-700 leading-relaxed">
+          政策內文中的 <code className="bg-white px-1 rounded border border-blue-200 font-bold">{'{{品牌名}}'}</code>、
+          <code className="bg-white px-1 rounded border border-blue-200 font-bold mx-0.5">{'{{公司名}}'}</code>、
+          <code className="bg-white px-1 rounded border border-blue-200 font-bold">{'{{統一編號}}'}</code>、
+          <code className="bg-white px-1 rounded border border-blue-200 font-bold mx-0.5">{'{{客服信箱}}'}</code>、
+          <code className="bg-white px-1 rounded border border-blue-200 font-bold">{'{{Line}}'}</code>、
+          <code className="bg-white px-1 rounded border border-blue-200 font-bold mx-0.5">{'{{管轄地}}'}</code>
+          會自動以下方商家欄位的內容替換，輸入一次即同步到所有政策與版權列。
+        </p>
       </div>
 
       {/* 一鍵 AI 生成政策 */}
@@ -122,7 +146,7 @@ export default function ComplianceTab() {
           <Sparkles size={16} /> 一鍵 AI 生成政策文案
         </h3>
         <p className="text-xs text-indigo-700 leading-relaxed">
-          依您的商號與商品資訊，自動生成符合台灣法規的隱私權政策、服務條款與退換貨政策，並覆寫下方欄位。
+          依商號與商品資訊，重新生成「使用者條款、隱私權政策、退費政策」並覆寫下方欄位（免責聲明與版權聲明維持不變）。
         </p>
         <button
           onClick={generatePolicies}
@@ -179,57 +203,45 @@ export default function ComplianceTab() {
         </p>
       </div>
 
-      {/* 隱私權政策 */}
+      {/* 版權聲明（單行，顯示於頁尾底部） */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-          <Lock size={16} className="text-primary" />
-          <h3 className="font-black text-sm text-slate-800">隱私權政策</h3>
+          <Copyright size={16} className="text-primary" />
+          <h3 className="font-black text-sm text-slate-800">版權聲明（頁尾底部）</h3>
         </div>
-        <textarea
-          value={compliance.privacyPolicy || ''}
-          onChange={(e) => updateStateByPath('compliance.privacyPolicy', e.target.value)}
-          onFocus={() => handleFocus('compliance.privacyPolicy')}
+        <input
+          type="text"
+          value={compliance.copyright || ''}
+          onChange={(e) => updateStateByPath('compliance.copyright', e.target.value)}
+          onFocus={() => handleFocus('compliance.copyright')}
           onBlur={handleBlur}
-          className={`${inputClass} h-48 font-normal leading-relaxed`}
-          placeholder="說明蒐集目的、利用範圍、資料安全與使用者權利…"
+          className={inputClass}
+          placeholder="COPYRIGHT© {{品牌名}} All rights reserved {{公司名}}．統一編號: {{統一編號}}"
         />
       </div>
 
-      {/* 服務條款 */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-        <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-          <FileText size={16} className="text-primary" />
-          <h3 className="font-black text-sm text-slate-800">服務條款 / 購買須知</h3>
+      {/* 各政策全文 */}
+      {policyDocs.map((doc) => (
+        <div key={doc.key} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+            {doc.icon}
+            <h3 className="font-black text-sm text-slate-800">{doc.title}</h3>
+          </div>
+          <textarea
+            value={compliance[doc.key] || ''}
+            onChange={(e) => updateStateByPath(`compliance.${doc.key}`, e.target.value)}
+            onFocus={() => handleFocus(`compliance.${doc.key}`)}
+            onBlur={handleBlur}
+            className={`${inputClass} ${doc.h} font-normal leading-relaxed`}
+            placeholder={doc.placeholder}
+          />
         </div>
-        <textarea
-          value={compliance.terms || ''}
-          onChange={(e) => updateStateByPath('compliance.terms', e.target.value)}
-          onFocus={() => handleFocus('compliance.terms')}
-          onBlur={handleBlur}
-          className={`${inputClass} h-40 font-normal leading-relaxed`}
-          placeholder="交易幣別、訂購付款、發票、智慧財產權等條款…"
-        />
-      </div>
+      ))}
 
-      {/* 退換貨/退費政策 */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-        <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-          <RotateCcw size={16} className="text-primary" />
-          <h3 className="font-black text-sm text-slate-800">退換貨與退費政策</h3>
-        </div>
-        <textarea
-          value={compliance.refundPolicy || ''}
-          onChange={(e) => updateStateByPath('compliance.refundPolicy', e.target.value)}
-          onFocus={() => handleFocus('compliance.refundPolicy')}
-          onBlur={handleBlur}
-          className={`${inputClass} h-40 font-normal leading-relaxed`}
-          placeholder="七日鑑賞期、數位內容例外、退費方式與工作天數…"
-        />
-        <p className="text-[10px] text-slate-400 leading-relaxed">
-          提醒：依《通訊交易解除權合理例外情事適用準則》，線上課程／數位內容若要排除七日鑑賞期，
-          須於消費者購買前明確告知並取得同意，建議保留上方相關條文。
-        </p>
-      </div>
+      <p className="text-[10px] text-slate-400 leading-relaxed px-1">
+        提醒：依《通訊交易解除權合理例外情事適用準則》，線上課程／數位內容若要排除七日鑑賞期，
+        須於消費者購買前明確告知並取得同意，請保留退費政策內相關條文。各政策內容請依您實際營運情況調整。
+      </p>
     </div>
   );
 }

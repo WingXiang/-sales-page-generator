@@ -20,7 +20,7 @@ const BLOCK_METADATA = {
     faq: { label: '常見問答', desc: '消除最後疑慮' },
     close: { label: '感性結尾', desc: '最後促單' },
     cta3: { label: '行動呼籲 3 (按鈕)', desc: '促單結尾下方按鈕' },
-    complianceFooter: { label: '金流合規頁尾', desc: '商家資訊與法律政策' }
+    complianceFooter: { label: '金流申請用頁尾', desc: '聯絡資訊、政策連結與版權' }
 };
 
 export default function LayoutTab() {

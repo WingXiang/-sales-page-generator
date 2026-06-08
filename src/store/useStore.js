@@ -1,4 +1,11 @@
 import { create } from 'zustand'
+import {
+  DEFAULT_DISCLAIMER,
+  DEFAULT_COPYRIGHT,
+  DEFAULT_PRIVACY_POLICY,
+  DEFAULT_TERMS,
+  DEFAULT_REFUND_POLICY,
+} from './complianceDefaults'
 
 const TEMPLATE_COURSE = {
   name: '📚 數位顧問培訓班銷售頁',
@@ -119,17 +126,24 @@ const TEMPLATE_COURSE = {
   compliance: {
     merchant: {
       // ⚠️ 以下為「範例資料」，申請金流前請務必改成真實商家資訊
-      companyName: '好學數位顧問有限公司',      // 範例·待更換
-      taxId: '00000000',                       // 範例·待更換（真實 8 碼統編）
+      brandName: '好學品牌',                    // 範例·待更換（品牌名，會帶入版權與政策）
+      companyName: '好學數位顧問有限公司',      // 範例·待更換（公司全名）
+      taxId: '00000000',                       // 範例·待更換（8 碼統編）
       responsiblePerson: '王小明',              // 範例·待更換
       phone: '02-2700-0000',                   // 範例·待更換
-      email: 'support@example.com',            // 範例·待更換
+      email: 'support@example.com',            // 範例·待更換（客服信箱）
+      lineId: '@example',                       // 範例·待更換（官方 LINE）
       address: '台北市大安區範例路 1 號 5 樓',   // 範例·待更換
+      jurisdiction: '臺北市',                   // 範例·待更換（管轄／仲裁地）
       serviceHours: '週一至週五 09:00 - 18:00'  // 可沿用或自行調整
     },
-    privacyPolicy: '本網站（以下稱「本站」）非常重視您的隱私權，並遵守中華民國《個人資料保護法》之規定。當您於本站填寫資料、購買商品或服務時，即表示您同意本政策之內容。\n\n一、蒐集目的與項目：為提供商品交易、客戶服務、訂單通知與售後服務，我們會蒐集您的姓名、電子郵件、聯絡電話及付款相關資訊。\n二、資料利用：您的個人資料僅用於本站營運、訂單處理、客戶聯繫及法令要求之用途，不會提供予與交易無關之第三人。\n三、資料安全：我們採取合理之技術與管理措施保護您的個人資料，避免遭未經授權之存取、竄改或洩漏。\n四、您的權利：您得隨時向本站查詢、閱覽、複製、補正或刪除您的個人資料，亦得要求停止蒐集、處理及利用。\n五、Cookie：本站可能使用 Cookie 以提升瀏覽體驗，您可透過瀏覽器設定拒絕之。\n\n如對本政策有任何疑問，歡迎透過下方客服聯絡方式與我們聯繫。',
-    terms: '歡迎您購買本站之商品與服務。為保障雙方權益，請於購買前詳閱以下條款：\n\n一、交易幣別：本站所有價格均以新台幣（NTD）計價。\n二、訂購與付款：您於本站完成訂購並付款後，訂單即成立，請確認所填寫之聯絡與付款資訊正確無誤。\n三、發票：本站依法開立電子發票，並寄送至您所留存之電子郵件。\n四、智慧財產權：本站提供之課程、影音、講義及相關內容均受著作權法保護，僅供您個人學習使用，不得擅自重製、散布、公開傳輸或轉售。\n五、服務變更：本站保留隨時修改、暫停或終止部分服務之權利，並將於本頁公告。',
-    refundPolicy: '一、實體商品：依《消費者保護法》規定，您享有商品到貨後七日之猶豫期（鑑賞期，非試用期）。如欲退貨，請於期限內透過下方客服方式聯繫，商品須保持全新完整。\n二、數位內容與線上課程：依《通訊交易解除權合理例外情事適用準則》，經您於購買前同意，數位內容或線上服務一經開通、提供或下載即視為完成，恕不適用七日猶豫期之退費。\n三、退費方式：符合退費條件者，本站將於收到退貨並確認後 14 個工作天內，以原付款方式辦理退款。\n四、如有任何爭議，歡迎透過下方客服資訊與我們協調處理。'
+    // 以下政策內文的 {{品牌名}} {{公司名}} {{統一編號}} {{客服信箱}} {{Line}} {{管轄地}}
+    // 會在渲染時自動以上方 merchant 欄位帶入替換
+    disclaimer: DEFAULT_DISCLAIMER,
+    privacyPolicy: DEFAULT_PRIVACY_POLICY,
+    refundPolicy: DEFAULT_REFUND_POLICY,
+    terms: DEFAULT_TERMS,
+    copyright: DEFAULT_COPYRIGHT
   },
   cta1: { text: '👉 立即報名', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' }, 
   cta2: { text: '立即加入，開啟自動化營運', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' }, 
@@ -315,13 +329,19 @@ export const useStore = create((set) => ({
 
   loadState: (newState) => set(() => {
     const merged = { ...newState };
-    // Backfill compliance for drafts saved before the 金流合規 feature existed.
-    // Runs once: after compliance exists, the user's later hide/show choices are respected.
-    if (!merged.compliance) {
-      merged.compliance = JSON.parse(JSON.stringify(TEMPLATE_COURSE.compliance));
-      if (Array.isArray(merged.layout) && !merged.layout.includes('complianceFooter')) {
-        merged.layout = [...merged.layout, 'complianceFooter'];
-      }
+    const hadCompliance = !!merged.compliance;
+    const dc = TEMPLATE_COURSE.compliance;
+    // Deep-merge compliance defaults so older drafts gain new fields
+    // (disclaimer/copyright/brandName…) while keeping the user's own edits.
+    merged.compliance = {
+      ...JSON.parse(JSON.stringify(dc)),
+      ...(merged.compliance || {}),
+      merchant: { ...dc.merchant, ...((merged.compliance || {}).merchant || {}) },
+    };
+    // Only auto-add the footer block for pre-feature drafts; afterwards respect
+    // the user's own show/hide choice in 佈局排序.
+    if (!hadCompliance && Array.isArray(merged.layout) && !merged.layout.includes('complianceFooter')) {
+      merged.layout = [...merged.layout, 'complianceFooter'];
     }
     return { state: merged };
   }),
