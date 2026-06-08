@@ -161,25 +161,46 @@ const TEMPLATE_COURSE = {
   imageBlocks: {}
 };
 
-// 圖文區塊範本（套版用）。套用後可在「圖文版塊」分頁自行編輯。
+// 三種圖文銷售頁設計範本（依高轉換銷售頁設計邏輯，預填示範內容，套用後可自行編輯）
 export const IMAGE_BLOCK_TEMPLATES = [
   {
-    id: 'fullImage',
-    name: '全寬主圖',
-    desc: '一張橫幅大圖 + 圖片說明',
-    block: { type: 'image', image: '', caption: '在此輸入圖片說明（可留空）', heading: '', text: '', imagePosition: 'left' }
+    id: 'feature',
+    name: '特色亮點（左圖右文）',
+    desc: '用圖片＋賣點說明，強化單一核心優勢',
+    block: {
+      type: 'imageText',
+      image: '',
+      caption: '',
+      heading: '為什麼選擇我們？',
+      text: '我們把複雜的流程拆解成可立即執行的步驟，讓你不必再自己摸索。\n✓ 系統化教學，跟著做就有成果\n✓ 範本與工具直接套用，省下大量時間\n✓ 終身觀看，隨時複習不怕忘記',
+      imagePosition: 'left'
+    }
   },
   {
-    id: 'imageLeft',
-    name: '左圖右文',
-    desc: '左邊圖片、右邊標題與內文',
-    block: { type: 'imageText', image: '', caption: '', heading: '在這裡輸入標題', text: '在這裡輸入內文說明，介紹這個段落的重點。', imagePosition: 'left' }
+    id: 'proof',
+    name: '成果展示（右圖左文）',
+    desc: '用實際成果／數據建立信任與說服力',
+    block: {
+      type: 'imageText',
+      image: '',
+      caption: '',
+      heading: '看得見的真實成果',
+      text: '已有數百位學員透過這套方法做出改變：\n‧ 平均每週省下 15 小時重複作業\n‧ 8 成學員在一個月內完成第一個成果\n‧ 滿意推薦率高達 98%\n你，就是下一個成功案例。',
+      imagePosition: 'right'
+    }
   },
   {
-    id: 'imageRight',
-    name: '右圖左文',
-    desc: '左邊標題與內文、右邊圖片',
-    block: { type: 'imageText', image: '', caption: '', heading: '在這裡輸入標題', text: '在這裡輸入內文說明，介紹這個段落的重點。', imagePosition: 'right' }
+    id: 'hero',
+    name: '情境主圖（全寬大圖）',
+    desc: '一張情境／品牌大圖營造氛圍與信任感',
+    block: {
+      type: 'image',
+      image: '',
+      caption: '在此輸入圖片說明（例如：真實上課情境、成果截圖，可留空）',
+      heading: '',
+      text: '',
+      imagePosition: 'left'
+    }
   }
 ];
 
@@ -188,17 +209,12 @@ export const useStore = create((set) => ({
   activeTab: 'core',
   deviceMode: 'desktop',
   activeExpandedSection: null,
-  // UI 偏好（不放進 state，避免污染草稿/匯出）
-  editorMode: (typeof localStorage !== 'undefined' && localStorage.getItem('sales_editor_mode') === 'advanced') ? 'advanced' : 'simple',
-  onboardingOpen: false,
+  // 浮動視窗：null | 'theme' | 'history' | 'deploy'（不放進 state）
+  activeModal: null,
 
   // Actions
   setActiveTab: (tab) => set({ activeTab: tab }),
-  setEditorMode: (mode) => {
-    try { localStorage.setItem('sales_editor_mode', mode); } catch { /* ignore */ }
-    set({ editorMode: mode });
-  },
-  setOnboardingOpen: (open) => set({ onboardingOpen: open }),
+  setActiveModal: (modal) => set({ activeModal: modal }),
   setDeviceMode: (mode) => set({ deviceMode: mode }),
   setActiveExpandedSection: (section) => set({ activeExpandedSection: section }),
   

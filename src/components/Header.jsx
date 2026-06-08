@@ -1,65 +1,13 @@
-import React from 'react';
-import { Sparkles, Edit, Eye, Download } from 'lucide-react';
+import { Edit, Eye, History, CloudUpload } from 'lucide-react';
 import { useStore } from '../store/useStore';
-import { generateInnerHTMLContent } from '../utils/templateGenerator';
 
 export default function Header({ currentUser, onLogout }) {
-  const { state, deviceMode, setOnboardingOpen } = useStore();
-
-  const handleExport = () => {
-      const htmlContent = generateInnerHTMLContent(state, deviceMode);
-      const fullHtml = `
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${state.meta?.courseName || '銷售頁'}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --bg-color: ${state.theme?.bgColor || '#ffffff'};
-            --text-color: ${state.theme?.textColor || '#000000'};
-            --primary-color: ${state.theme?.primaryColor || '#2563eb'};
-            --accent-color: ${state.theme?.accentColor || '#f97316'};
-        }
-        body, html { 
-            background-color: var(--bg-color) !important; 
-            color: var(--text-color) !important; 
-            font-family: "Microsoft JhengHei", "Segoe UI", sans-serif !important; 
-            word-break: break-word; 
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-        }
-        .text-primary { color: var(--primary-color) !important; }
-        .bg-primary { background-color: var(--primary-color) !important; }
-        .text-accent { color: var(--accent-color) !important; }
-        .bg-accent { background-color: var(--accent-color) !important; }
-    </style>
-</head>
-<body class="antialiased min-h-screen">
-    <main class="w-full max-w-5xl mx-auto px-6 md:px-12 lg:px-16 py-16 md:py-24 space-y-32">
-        ${htmlContent}
-    </main>
-</body>
-</html>`;
-      
-      const blob = new Blob([fullHtml], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'sales-page.html';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-  };
+  const { setActiveModal } = useStore();
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-40 shrink-0 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className="flex-shrink-0 animate-bounce">
+        <span className="flex-shrink-0">
           <img src="https://i.ibb.co/qYHbR1VS/LOG.png" alt="Logo" className="h-7 w-auto object-contain" />
         </span>
         <div>
@@ -68,12 +16,20 @@ export default function Header({ currentUser, onLogout }) {
       </div>
       
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => setOnboardingOpen(true)}
-          className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-[0.98] flex items-center gap-1.5"
-        >
-          <Sparkles size={14} /> 快速上手
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveModal('history')}
+            className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-[0.98] flex items-center gap-1.5"
+          >
+            <History size={14} /> 版本紀錄
+          </button>
+          <button
+            onClick={() => setActiveModal('deploy')}
+            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm active:scale-[0.98] flex items-center gap-1.5"
+          >
+            <CloudUpload size={14} /> 公開部署
+          </button>
+        </div>
 
         {currentUser && (
           <div className="flex items-center gap-3 border-r border-slate-200 pr-3">
