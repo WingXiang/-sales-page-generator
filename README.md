@@ -45,27 +45,36 @@
 
 ---
 
-## 🔐 AI 文案生成的安全代理 (Serverless Proxy)
+## 🚀 部署到 Vercel（推薦，AI 功能可正常運作）
 
-為避免 Gemini API Key 被打包進前端靜態檔案而遭盜用，AI 一鍵生成的請求會先送到一個 serverless 代理端點，由後端持有 Key 後再轉呼叫 Gemini。代理程式位於 [`api/generate.js`](api/generate.js)，採 Vercel Serverless Function 格式。
+GitHub Pages 為純靜態主機、無後端，AI 代理（`/api/generate`）無法執行，AI 生成會降級為本地範本。
+若要讓線上 AI 真正運作，請部署到 **Vercel**（前端 + serverless 代理一站搞定）。專案已內含 [`vercel.json`](vercel.json) 與 [`api/generate.js`](api/generate.js)，開箱即用。
 
-### 部署方式（擇一）
+### 方式 A：Vercel 儀表板匯入（推薦，含自動 CI/CD）
 
-**方案 A：前後端都部署在 Vercel（最簡單）**
+1. 登入 [vercel.com](https://vercel.com/) → **Add New… → Project** → 匯入本 GitHub 倉庫。
+2. Framework 會自動偵測為 **Vite**，建置設定無須更動，直接 **Deploy**。
+3. 部署後到 **Settings → Environment Variables** 新增：
+   - `GEMINI_API_KEY`：你的 Gemini API Key（必填）
+   - `ALLOWED_ORIGIN`：允許呼叫代理的網域，例如 `https://你的專案.vercel.app`（選填，建議鎖定）
+4. 回到 **Deployments** 點 **Redeploy** 讓環境變數生效。
+5. 之後每次 `git push` 到 `main`，Vercel 會自動重新部署。
 
-1. 將本專案匯入 [Vercel](https://vercel.com/)（會自動偵測 Vite 與 `/api` 目錄）。
-2. 在 Vercel 專案的 **Settings → Environment Variables** 新增：
-   - `GEMINI_API_KEY`：你的 Google Gemini API Key（必填）
-   - `ALLOWED_ORIGIN`：允許呼叫的前端網域（選填，建議鎖定）
-3. 前端的 `VITE_AI_PROXY_URL` 留空即可（預設打同源的 `/api/generate`）。
+### 方式 B：Vercel CLI（一次性指令部署）
 
-**方案 B：前端留在 GitHub Pages、代理另放 Vercel**
+```bash
+npm i -g vercel          # 安裝 CLI
+vercel login             # 用瀏覽器登入你的帳號
+vercel link              # 在專案根目錄連結 / 建立 Vercel 專案
+vercel env add GEMINI_API_KEY production   # 貼上你的 Key
+vercel --prod            # 正式部署
+```
 
-1. 僅將 `/api` 部署到 Vercel，並設定上述 `GEMINI_API_KEY`。
-2. 在前端 build 時設定環境變數 `VITE_AI_PROXY_URL=https://your-proxy.vercel.app/api/generate`。
-3. 在 Vercel 設定 `ALLOWED_ORIGIN` 為你的 GitHub Pages 網域，避免代理被任意盜用消耗額度。
-
+> 前端的 `VITE_AI_PROXY_URL` 留空即可（預設打同源 `/api/generate`）。
 > 若代理未部署或連線失敗，AI 生成會自動降級為「本地備用智慧生成系統」，不影響其他功能。
+
+> **遷移提醒：** 改用 Vercel 後，可在 GitHub 倉庫 **Settings → Pages** 停用 GitHub Pages，
+> 或移除 `.github/workflows/deploy.yml` 以避免兩邊同時部署造成混淆。
 
 ---
 
