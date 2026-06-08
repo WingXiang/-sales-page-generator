@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '../store/useStore';
-import { Monitor, Tablet, Smartphone } from 'lucide-react';
+import { Monitor, Tablet, Smartphone, Palette } from 'lucide-react';
 import { generateInnerHTMLContent } from '../utils/templateGenerator';
 import FloatingToolbar from './editor/FloatingToolbar';
 
 export default function PreviewPane() {
-  const { state, deviceMode, setDeviceMode, updateStateByPath, applyTheme } = useStore();
+  const { state, deviceMode, setDeviceMode, updateStateByPath, applyTheme, setActiveModal } = useStore();
   const iframeRef = useRef(null);
   const [activeElement, setActiveElement] = useState(null);
   const ignoreNextUpdateRef = useRef(false);
@@ -287,8 +287,15 @@ export default function PreviewPane() {
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-bold text-slate-600">💡 指引：在右側直接「點選文字」即可編輯！</span>
         </div>
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0 self-end sm:self-auto">
-          <button 
+        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+        <button
+          onClick={() => setActiveModal('theme')}
+          className="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:text-primary text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+        >
+          <Palette size={14} /> 自訂配色
+        </button>
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button
             onClick={() => setDeviceMode('mobile')}
             className={`tab-bar-btn p-2 rounded-lg transition-all flex items-center gap-1.5 text-xs font-bold ${deviceMode === 'mobile' ? 'bg-primary text-white' : 'text-slate-500 hover:text-slate-800'}`}
           >
@@ -306,6 +313,7 @@ export default function PreviewPane() {
           >
             <Monitor size={14} /> 電腦
           </button>
+        </div>
         </div>
       </div>
 
