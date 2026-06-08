@@ -102,7 +102,14 @@ export default function CoreTab() {
         case 'brand': return (
             <>
               <div>
-                <label className={labelClass}>品牌名稱</label>
+                <ImageUploadField
+                  label="網站 Logo（顯示於頁面左上角，可留用預設）"
+                  value={state.brandInfo?.logo || ''}
+                  onChange={(val) => updateField('brandInfo', 'logo', val)}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>品牌名稱（＝頁面左上角網站名稱）</label>
                 <input type="text" value={state.brandInfo?.brandName || ''} onChange={(e) => updateField('brandInfo', 'brandName', e.target.value)} onFocus={() => handleFocus('brandInfo.brandName')} onBlur={handleBlur} className={inputClass} />
               </div>
               <div>

@@ -3,6 +3,7 @@ import { useStore } from './store/useStore';
 import Header from './components/Header';
 import EditorPane from './components/EditorPane';
 import PreviewPane from './components/PreviewPane';
+import Onboarding from './components/Onboarding';
 import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast';
 
@@ -11,7 +12,7 @@ function App() {
   const editorRef = useRef(null);
   const dragHandleRef = useRef(null);
   
-  const { state, loadState, resetState } = useStore();
+  const { state, loadState, resetState, setOnboardingOpen } = useStore();
   const isFirstLoad = useRef(true);
 
   // User Verification State
@@ -111,11 +112,17 @@ function App() {
         }
         // If no draft is saved under this user, load the default template
         resetState();
+        // 首次使用（無草稿）且未看過引導 → 自動開啟快速上手
+        const seenKey = `sales_onboarding_seen_${currentUser.email}`;
+        if (!localStorage.getItem(seenKey)) {
+          setOnboardingOpen(true);
+          try { localStorage.setItem(seenKey, '1'); } catch { /* ignore */ }
+        }
       } catch (e) {
         console.error('Failed to load user draft:', e);
       }
     }
-  }, [isVerified, currentUser, loadState, resetState]);
+  }, [isVerified, currentUser, loadState, resetState, setOnboardingOpen]);
 
   // Auto-save draft on state change, specifically for the logged-in user
   useEffect(() => {
@@ -263,6 +270,8 @@ function App() {
           </div>
         </div>
       )}
+
+      {isVerified && <Onboarding />}
 
       <Toaster position="bottom-right" />
     </div>
