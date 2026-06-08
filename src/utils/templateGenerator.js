@@ -6,6 +6,38 @@ function getOptimalGridClass(count) {
     return 'grid-cols-1 md:grid-cols-3';
 }
 
+const IMAGE_BLOCK_PLACEHOLDER = 'https://placehold.co/800x500/eae8fc/4f46e5?text=%E8%AB%8B%E4%B8%8A%E5%82%B3%E5%9C%96%E7%89%87';
+
+// 渲染使用者自訂的圖文區塊（圖片不可內嵌編輯；文字以 data-live-path 可內嵌編輯）
+function renderImageBlock(id, blk) {
+    const nl2br = (t) => (t || '').replace(/\\n/g, '\n').replace(/\n/g, '<br>');
+    const imgSrc = blk.image || IMAGE_BLOCK_PLACEHOLDER;
+    const imgTag = `<img class="w-full h-auto rounded-3xl border border-slate-200 shadow-lg object-cover" src="${imgSrc}" alt="" onerror="this.src='${IMAGE_BLOCK_PLACEHOLDER}'">`;
+
+    if (blk.type === 'imageText') {
+        const imgFirst = blk.imagePosition !== 'right';
+        return `
+            <!-- 圖文區塊（圖文左右） -->
+            <section id="section-imageBlock:${id}" class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-5xl mx-auto animate-fade-in transition-all duration-300">
+                <div class="${imgFirst ? 'lg:order-1' : 'lg:order-2'}">${imgTag}</div>
+                <div class="space-y-4 ${imgFirst ? 'lg:order-2' : 'lg:order-1'}">
+                    <h3 data-live-path="imageBlocks.${id}.heading" class="text-2xl md:text-3xl font-black text-primary leading-snug">${blk.heading || ''}</h3>
+                    <p data-live-path="imageBlocks.${id}.text" class="text-base opacity-80 leading-relaxed">${nl2br(blk.text)}</p>
+                </div>
+            </section>
+        `;
+    }
+
+    // 預設：全寬主圖（+ 可選圖說）
+    return `
+        <!-- 圖文區塊（全寬主圖） -->
+        <section id="section-imageBlock:${id}" class="max-w-5xl mx-auto animate-fade-in transition-all duration-300">
+            ${imgTag}
+            ${(blk.caption && blk.caption.trim()) ? `<p data-live-path="imageBlocks.${id}.caption" class="text-center text-sm opacity-60 mt-3">${nl2br(blk.caption)}</p>` : ''}
+        </section>
+    `;
+}
+
 export function generateInnerHTMLContent(state, deviceMode, forPreview = false) {
     let html = '';
 
@@ -60,18 +92,27 @@ export function generateInnerHTMLContent(state, deviceMode, forPreview = false) 
         `;
     };
 
-    // 網站名稱（左上角顯示）— 金流審核要求平台需顯示網站名稱
+    // 頁首：Logo + 網站名稱（左上角）— 金流審核要求平台需顯示網站名稱
     const siteName = state.brandInfo?.brandName || '';
-    if (siteName) {
+    const siteLogo = state.brandInfo?.logo || 'https://i.ibb.co/qYHbR1VS/LOG.png';
+    if (siteName || siteLogo) {
         html += `
-            <!-- 網站名稱 / 平台名稱（左上角） -->
-            <header id="site-header" class="flex items-center justify-start pb-2">
+            <!-- 頁首：Logo + 網站名稱 -->
+            <header id="site-header" class="flex items-center gap-2.5 -mb-24">
+                ${siteLogo ? `<img src="${siteLogo}" alt="logo" class="h-8 md:h-9 w-auto object-contain shrink-0" onerror="this.style.display='none'">` : ''}
                 <span data-live-path="brandInfo.brandName" class="text-lg md:text-xl font-black text-primary tracking-tight">${siteName}</span>
             </header>
         `;
     }
 
     state.layout.forEach(section => {
+        // 動態圖文區塊：鍵格式為 imageBlock:<id>
+        if (typeof section === 'string' && section.startsWith('imageBlock:')) {
+            const id = section.slice('imageBlock:'.length);
+            const blk = state.imageBlocks && state.imageBlocks[id];
+            if (blk) html += renderImageBlock(id, blk);
+            return; // 孤兒鍵（查無資料）安全跳過
+        }
         switch (section) {
             case 'hero':
                 // Handle both actual newlines and literal \n string

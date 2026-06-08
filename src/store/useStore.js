@@ -24,6 +24,7 @@ const TEMPLATE_COURSE = {
   },
   brandInfo: {
     brandName: '數位顧問培訓學堂',
+    logo: 'https://i.ibb.co/qYHbR1VS/LOG.png',
     aboutTitle: '關於培訓團隊',
     aboutText: '我們專為一人公司經營者提供實戰型的數位顧問培訓。我們的使命是協助您打造自動化運營系統，省下繁瑣的瑣碎時間，讓您能100%專心發展核心事業。',
     contactEmail: 'support@finjapanlife.com',
@@ -156,17 +157,48 @@ const TEMPLATE_COURSE = {
   cta3: { text: '現在加入，專注發展核心事業', link: '#', fontSize: '16px', bgColor: '#c67e13', paddingX: '32px', paddingY: '16px', borderRadius: '16px', widthMode: 'auto', customWidth: '300px', heightMode: 'auto', customHeight: '50px' }, 
   layout: ['hero', 'cta1', 'painPoints', 'empathy', 'transition', 'promise', 'services', 'cta2', 'curriculum', 'courseInfo', 'about', 'authority', 'qualification', 'testimonials', 'pricingPlans', 'faq', 'close', 'cta3', 'complianceFooter'],
   customStyles: {},
-  elementStyles: { desktop: {}, tablet: {}, mobile: {} }
+  elementStyles: { desktop: {}, tablet: {}, mobile: {} },
+  imageBlocks: {}
 };
+
+// 圖文區塊範本（套版用）。套用後可在「圖文版塊」分頁自行編輯。
+export const IMAGE_BLOCK_TEMPLATES = [
+  {
+    id: 'fullImage',
+    name: '全寬主圖',
+    desc: '一張橫幅大圖 + 圖片說明',
+    block: { type: 'image', image: '', caption: '在此輸入圖片說明（可留空）', heading: '', text: '', imagePosition: 'left' }
+  },
+  {
+    id: 'imageLeft',
+    name: '左圖右文',
+    desc: '左邊圖片、右邊標題與內文',
+    block: { type: 'imageText', image: '', caption: '', heading: '在這裡輸入標題', text: '在這裡輸入內文說明，介紹這個段落的重點。', imagePosition: 'left' }
+  },
+  {
+    id: 'imageRight',
+    name: '右圖左文',
+    desc: '左邊標題與內文、右邊圖片',
+    block: { type: 'imageText', image: '', caption: '', heading: '在這裡輸入標題', text: '在這裡輸入內文說明，介紹這個段落的重點。', imagePosition: 'right' }
+  }
+];
 
 export const useStore = create((set) => ({
   state: JSON.parse(JSON.stringify(TEMPLATE_COURSE)),
   activeTab: 'core',
   deviceMode: 'desktop',
   activeExpandedSection: null,
-  
+  // UI 偏好（不放進 state，避免污染草稿/匯出）
+  editorMode: (typeof localStorage !== 'undefined' && localStorage.getItem('sales_editor_mode') === 'advanced') ? 'advanced' : 'simple',
+  onboardingOpen: false,
+
   // Actions
   setActiveTab: (tab) => set({ activeTab: tab }),
+  setEditorMode: (mode) => {
+    try { localStorage.setItem('sales_editor_mode', mode); } catch { /* ignore */ }
+    set({ editorMode: mode });
+  },
+  setOnboardingOpen: (open) => set({ onboardingOpen: open }),
   setDeviceMode: (mode) => set({ deviceMode: mode }),
   setActiveExpandedSection: (section) => set({ activeExpandedSection: section }),
   
@@ -357,8 +389,45 @@ export const useStore = create((set) => ({
       if (idx >= 0) merged.layout.splice(idx, 0, 'courseInfo');
       else merged.layout.push('courseInfo');
     }
+    // Backfill 圖文區塊容器（舊草稿相容）。
+    if (!merged.imageBlocks || typeof merged.imageBlocks !== 'object') merged.imageBlocks = {};
     return { state: merged };
   }),
-  
+
+  // 新增圖文區塊（套用範本）：建立資料 + 把 imageBlock:<id> 插入 layout（footer 前）
+  createImageBlock: (template) => set((store) => {
+    const id = `b${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+    const base = (template && template.block) ? template.block : {};
+    const block = {
+      type: 'image', image: '', caption: '', heading: '', text: '', imagePosition: 'left',
+      ...base
+    };
+    const layout = [...(store.state.layout || [])];
+    const key = `imageBlock:${id}`;
+    const footerIdx = layout.indexOf('complianceFooter');
+    if (footerIdx >= 0) layout.splice(footerIdx, 0, key);
+    else layout.push(key);
+    return {
+      state: {
+        ...store.state,
+        imageBlocks: { ...(store.state.imageBlocks || {}), [id]: block },
+        layout
+      }
+    };
+  }),
+
+  // 刪除圖文區塊：同時移除資料與 layout 中的鍵
+  removeImageBlock: (id) => set((store) => {
+    const nextBlocks = { ...(store.state.imageBlocks || {}) };
+    delete nextBlocks[id];
+    return {
+      state: {
+        ...store.state,
+        imageBlocks: nextBlocks,
+        layout: (store.state.layout || []).filter((k) => k !== `imageBlock:${id}`)
+      }
+    };
+  }),
+
   resetState: () => set({ state: JSON.parse(JSON.stringify(TEMPLATE_COURSE)) })
 }));

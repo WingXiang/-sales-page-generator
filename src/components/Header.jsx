@@ -4,7 +4,7 @@ import { useStore } from '../store/useStore';
 import { generateInnerHTMLContent } from '../utils/templateGenerator';
 
 export default function Header({ currentUser, onLogout }) {
-  const { state, deviceMode } = useStore();
+  const { state, deviceMode, setOnboardingOpen } = useStore();
 
   const handleExport = () => {
       const htmlContent = generateInnerHTMLContent(state, deviceMode);
@@ -68,6 +68,13 @@ export default function Header({ currentUser, onLogout }) {
       </div>
       
       <div className="flex items-center gap-4">
+        <button
+          onClick={() => setOnboardingOpen(true)}
+          className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-[0.98] flex items-center gap-1.5"
+        >
+          <Sparkles size={14} /> 快速上手
+        </button>
+
         {currentUser && (
           <div className="flex items-center gap-3 border-r border-slate-200 pr-3">
             <span className="text-xs font-bold text-slate-600 hidden md:inline">

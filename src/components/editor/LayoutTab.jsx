@@ -24,9 +24,22 @@ const BLOCK_METADATA = {
     complianceFooter: { label: '金流申請用頁尾', desc: '聯絡資訊、政策連結與版權' }
 };
 
+const isImageBlockKey = (k) => typeof k === 'string' && k.startsWith('imageBlock:');
+
 export default function LayoutTab() {
-  const { state, updateStateByPath } = useStore();
+  const { state, updateStateByPath, removeImageBlock } = useStore();
   const activeLayout = state.layout || [];
+  const imageBlocks = state.imageBlocks || {};
+
+  const labelFor = (key) => {
+    if (isImageBlockKey(key)) {
+      const blk = imageBlocks[key.slice('imageBlock:'.length)];
+      const txt = (blk?.heading || blk?.caption || '').trim();
+      return txt ? `圖文區塊：${txt.slice(0, 12)}` : '圖文區塊';
+    }
+    return BLOCK_METADATA[key]?.label || key;
+  };
+  const descFor = (key) => isImageBlockKey(key) ? '自訂圖片 / 圖文' : (BLOCK_METADATA[key]?.desc || '');
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -36,7 +49,12 @@ export default function LayoutTab() {
     updateStateByPath('layout', items);
   };
 
-  const inactiveLayout = Object.keys(BLOCK_METADATA).filter(k => !activeLayout.includes(k));
+  // 涵蓋靜態區塊 + 動態圖文區塊，避免被隱藏的圖文區塊在兩份清單都消失
+  const universe = [
+    ...Object.keys(BLOCK_METADATA),
+    ...Object.keys(imageBlocks).map(id => `imageBlock:${id}`),
+  ];
+  const inactiveLayout = universe.filter(k => !activeLayout.includes(k));
 
   const toggleBlock = (blockId, hide) => {
     if (hide) {
@@ -74,19 +92,32 @@ export default function LayoutTab() {
                         <div className="flex items-center gap-3">
                           <span className="text-slate-400 cursor-grab">☰</span>
                           <div>
-                            <div className="text-xs font-black text-slate-700">{BLOCK_METADATA[blockId]?.label || blockId}</div>
-                            <div className="text-[10px] text-slate-400">{BLOCK_METADATA[blockId]?.desc}</div>
+                            <div className="text-xs font-black text-slate-700">{labelFor(blockId)}</div>
+                            <div className="text-[10px] text-slate-400">{descFor(blockId)}</div>
                           </div>
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleBlock(blockId, true);
-                          }}
-                          className="text-red-500 text-xs px-2.5 py-1.5 bg-red-50 hover:bg-red-100 rounded-lg font-bold border border-red-100 transition-colors"
-                        >
-                          隱藏
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleBlock(blockId, true);
+                            }}
+                            className="text-slate-500 text-xs px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold border border-slate-200 transition-colors"
+                          >
+                            隱藏
+                          </button>
+                          {isImageBlockKey(blockId) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeImageBlock(blockId.slice('imageBlock:'.length));
+                              }}
+                              className="text-red-500 text-xs px-2.5 py-1.5 bg-red-50 hover:bg-red-100 rounded-lg font-bold border border-red-100 transition-colors"
+                            >
+                              刪除
+                            </button>
+                          )}
+                        </div>
                       </div>
                     )}
                   </Draggable>
@@ -107,15 +138,25 @@ export default function LayoutTab() {
             inactiveLayout.map(blockId => (
               <div key={blockId} className="flex items-center justify-between p-3.5 bg-white border border-slate-200 rounded-xl">
                 <div>
-                  <div className="text-xs font-bold text-slate-500">{BLOCK_METADATA[blockId]?.label}</div>
-                  <div className="text-[10px] text-slate-400">{BLOCK_METADATA[blockId]?.desc}</div>
+                  <div className="text-xs font-bold text-slate-500">{labelFor(blockId)}</div>
+                  <div className="text-[10px] text-slate-400">{descFor(blockId)}</div>
                 </div>
-                <button
-                  onClick={() => toggleBlock(blockId, false)}
-                  className="text-indigo-600 text-xs px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 rounded-lg font-bold border border-indigo-100 transition-colors"
-                >
-                  啟用
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => toggleBlock(blockId, false)}
+                    className="text-indigo-600 text-xs px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 rounded-lg font-bold border border-indigo-100 transition-colors"
+                  >
+                    啟用
+                  </button>
+                  {isImageBlockKey(blockId) && (
+                    <button
+                      onClick={() => removeImageBlock(blockId.slice('imageBlock:'.length))}
+                      className="text-red-500 text-xs px-2.5 py-1.5 bg-red-50 hover:bg-red-100 rounded-lg font-bold border border-red-100 transition-colors"
+                    >
+                      刪除
+                    </button>
+                  )}
+                </div>
               </div>
             ))
           )}
