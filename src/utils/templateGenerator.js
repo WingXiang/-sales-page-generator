@@ -60,6 +60,17 @@ export function generateInnerHTMLContent(state, deviceMode, forPreview = false) 
         `;
     };
 
+    // 網站名稱（左上角顯示）— 金流審核要求平台需顯示網站名稱
+    const siteName = state.brandInfo?.brandName || '';
+    if (siteName) {
+        html += `
+            <!-- 網站名稱 / 平台名稱（左上角） -->
+            <header id="site-header" class="flex items-center justify-start pb-2">
+                <span data-live-path="brandInfo.brandName" class="text-lg md:text-xl font-black text-primary tracking-tight">${siteName}</span>
+            </header>
+        `;
+    }
+
     state.layout.forEach(section => {
         switch (section) {
             case 'hero':
@@ -243,6 +254,37 @@ export function generateInnerHTMLContent(state, deviceMode, forPreview = false) 
                     </section>
                 `;
                 break;
+
+            case 'courseInfo': {
+                const ci = state.courseInfo || {};
+                const ciRows = [
+                    ['課程名稱', 'courseInfo.courseName', ci.courseName],
+                    ['課程堂數', 'courseInfo.lessonCount', ci.lessonCount],
+                    ['課堂總時數', 'courseInfo.totalHours', ci.totalHours],
+                    ['觀看期限（履約期間）', 'courseInfo.accessPeriod', ci.accessPeriod],
+                    ['收看方式／軟體', 'courseInfo.platform', ci.platform],
+                ].filter(r => r[2] && String(r[2]).trim());
+
+                const ciRowsHtml = ciRows.map(([label, path, val]) => `
+                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6 py-3.5 border-b border-slate-100 last:border-0">
+                        <dt class="text-sm font-black text-primary sm:w-44 shrink-0">${label}</dt>
+                        <dd data-live-path="${path}" class="text-sm md:text-base opacity-80 leading-relaxed">${val}</dd>
+                    </div>
+                `).join('');
+
+                html += `
+                    <!-- 課程資訊（金流審核：時數/堂數/履約期間/收看方式） -->
+                    <section id="section-courseInfo" class="space-y-8 max-w-3xl mx-auto animate-fade-in transition-all duration-300">
+                        <div class="text-center">
+                            <p class="text-2xl md:text-3xl font-black tracking-tight text-primary" data-live-path="courseInfo.title">${ci.title || '課程資訊'}</p>
+                        </div>
+                        <dl class="bg-white border border-slate-200 rounded-3xl shadow-sm px-6 md:px-10 py-2">
+                            ${ciRowsHtml}
+                        </dl>
+                    </section>
+                `;
+                break;
+            }
 
             case 'about':
                 const aboutText = (state.brandInfo?.aboutText || '').replace(/\n/g, '<br>');
