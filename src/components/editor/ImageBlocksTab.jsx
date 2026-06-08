@@ -42,10 +42,10 @@ export default function ImageBlocksTab() {
       {/* ① 選擇範本（套版） */}
       <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 md:p-5 rounded-2xl border border-indigo-100 space-y-3">
         <h3 className="text-sm font-black text-indigo-900 flex items-center gap-2">
-          <LayoutTemplate size={16} /> ① 選擇範本快速新增
+          <LayoutTemplate size={16} /> ① 新增圖文區塊
         </h3>
         <p className="text-xs text-indigo-700 leading-relaxed">
-          點選範本即可在頁面新增一個圖文區塊（預設加在頁尾前）。新增後可在下方「② 我的圖文區塊」編輯內容，
+          選一種版型新增到頁面（預設加在頁尾前）。新增後可在下方「② 我的圖文區塊」編輯內容，
           並到「佈局排序」分頁拖曳到任意位置。
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -58,7 +58,7 @@ export default function ImageBlocksTab() {
               <div className="text-indigo-500 group-hover:text-indigo-700 transition-colors">{TEMPLATE_ICON[tpl.id]}</div>
               <div className="text-xs font-black text-slate-700">{tpl.name}</div>
               <div className="text-[10px] text-slate-400 leading-snug">{tpl.desc}</div>
-              <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-black text-indigo-600"><Plus size={11} /> 套用</span>
+              <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-black text-indigo-600"><Plus size={11} /> 新增</span>
             </button>
           ))}
         </div>

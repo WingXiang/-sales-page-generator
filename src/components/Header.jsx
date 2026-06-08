@@ -1,4 +1,4 @@
-import { Edit, Eye, History, CloudUpload } from 'lucide-react';
+import { Edit, Eye, History, CloudUpload, LayoutGrid } from 'lucide-react';
 import { useStore } from '../store/useStore';
 
 export default function Header({ currentUser, onLogout }) {
@@ -17,6 +17,12 @@ export default function Header({ currentUser, onLogout }) {
       
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveModal('templates')}
+            className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-[0.98] flex items-center gap-1.5"
+          >
+            <LayoutGrid size={14} /> 範本
+          </button>
           <button
             onClick={() => setActiveModal('history')}
             className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-[0.98] flex items-center gap-1.5"
