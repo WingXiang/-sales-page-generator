@@ -465,60 +465,101 @@ export function generateInnerHTMLContent(state, deviceMode) {
             case 'complianceFooter': {
                 const c = state.compliance || {};
                 const m = c.merchant || {};
-                const nl2br = (t) => (t || '').replace(/\\n/g, '\n').replace(/\n/g, '<br>');
 
-                const infoRow = (label, path, value) => value ? `
-                    <div class="flex gap-2">
-                        <span class="font-bold shrink-0 opacity-60">${label}</span>
-                        <span data-live-path="${path}" class="opacity-80 break-all">${value}</span>
-                    </div>
-                ` : '';
+                // 把政策內文的 {{變數}} 以商家欄位自動帶入
+                const sub = (t) => (t || '')
+                    .replace(/\{\{品牌名\}\}/g, m.brandName || state.brandInfo?.brandName || '')
+                    .replace(/\{\{公司名\}\}/g, m.companyName || '')
+                    .replace(/\{\{統一編號\}\}/g, m.taxId || '')
+                    .replace(/\{\{客服信箱\}\}/g, m.email || '')
+                    .replace(/\{\{Line\}\}/g, m.lineId || '')
+                    .replace(/\{\{管轄地\}\}/g, m.jurisdiction || '');
+                const nl2br = (t) => sub(t).replace(/\\n/g, '\n').replace(/\n/g, '<br>');
 
-                const policy = (title, path, text) => (text && text.trim()) ? `
-                    <details class="border-t border-slate-200/70 first:border-t-0 py-3.5 group">
-                        <summary class="font-bold text-sm flex items-center justify-between cursor-pointer list-none select-none outline-none text-primary">
-                            <span class="flex items-center gap-2"><span class="inline-block w-1 h-4 bg-accent rounded-full"></span>${title}</span>
-                            <span class="transition-transform duration-300 group-open:rotate-180 shrink-0 font-black text-accent">＋</span>
-                        </summary>
-                        <p data-live-path="${path}" class="text-xs leading-relaxed opacity-70 pt-3 whitespace-pre-line">${nl2br(text)}</p>
-                    </details>
-                ` : '';
+                // 要做成「另開分頁」的政策文件（依使用者選擇的順序與內容過濾）
+                const docs = [
+                    { id: 'doc-terms', title: '使用者條款', path: 'compliance.terms', text: c.terms },
+                    { id: 'doc-privacy', title: '隱私權政策', path: 'compliance.privacyPolicy', text: c.privacyPolicy },
+                    { id: 'doc-refund', title: '退費/退貨政策', path: 'compliance.refundPolicy', text: c.refundPolicy },
+                    { id: 'doc-disclaimer', title: '免責聲明', path: 'compliance.disclaimer', text: c.disclaimer },
+                ].filter(d => d.text && d.text.trim());
 
-                const merchantRows = [
-                    infoRow('商號／公司名稱', 'compliance.merchant.companyName', m.companyName),
-                    infoRow('統一編號', 'compliance.merchant.taxId', m.taxId),
-                    infoRow('負責人', 'compliance.merchant.responsiblePerson', m.responsiblePerson),
-                    infoRow('客服電話', 'compliance.merchant.phone', m.phone),
-                    infoRow('客服信箱', 'compliance.merchant.email', m.email),
-                    infoRow('營業地址', 'compliance.merchant.address', m.address),
-                    infoRow('客服時間', 'compliance.merchant.serviceHours', m.serviceHours)
-                ].join('');
+                const contactRow = (label, value) => value ? `<p class="opacity-80"><span class="opacity-60">${label}：</span>${value}</p>` : '';
 
-                const year = new Date().getFullYear();
-                const copyName = m.companyName || state.brandInfo?.brandName || '';
+                const footerLinks = docs.map(d => `
+                    <a href="#${d.id}" target="_blank" rel="noopener" class="legal-link block opacity-80 hover:opacity-100 hover:text-primary transition-colors w-fit">${d.title}</a>
+                `).join('');
+
+                const copyrightLine = sub(c.copyright || '');
+
+                const overlays = docs.map(d => `
+                    <section id="${d.id}" class="legal-doc" style="display:none;">
+                        <div class="max-w-3xl mx-auto px-6 py-12 md:py-16">
+                            <div class="flex items-center justify-between gap-4 mb-8 pb-4 border-b-2 border-primary">
+                                <h1 class="text-xl md:text-2xl font-black text-primary">${d.title}</h1>
+                                <a href="#" onclick="event.preventDefault(); location.hash='';" class="text-xs md:text-sm font-bold text-primary border border-primary/30 rounded-full px-4 py-1.5 hover:bg-primary hover:text-white transition-colors shrink-0">← 返回</a>
+                            </div>
+                            <div data-live-path="${d.path}" class="text-sm leading-loose opacity-80 whitespace-pre-line">${nl2br(d.text)}</div>
+                            ${copyrightLine ? `<p class="mt-12 pt-6 border-t border-slate-200/60 text-[11px] opacity-50">${copyrightLine}</p>` : ''}
+                        </div>
+                    </section>
+                `).join('');
 
                 html += `
-                    <!-- 金流合規頁尾：商家資訊與法律政策 -->
+                    <!-- 金流申請用頁尾：聯絡資訊、政策連結與版權 -->
                     <footer id="section-complianceFooter" class="border-t-4 border-primary pt-12 mt-8 text-slate-600 animate-fade-in transition-all duration-300">
                         <div class="max-w-4xl mx-auto space-y-8">
-                            <div class="space-y-4">
-                                <h3 class="text-base font-black text-primary flex items-center gap-2">
-                                    <span class="inline-block w-1.5 h-5 bg-accent rounded-full"></span>商家資訊
-                                </h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2.5 text-xs md:text-sm bg-slate-50 border border-slate-200 rounded-2xl p-5 md:p-6">
-                                    ${merchantRows}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs md:text-sm">
+                                <div class="space-y-2.5">
+                                    <h3 class="text-base font-black text-primary flex items-center gap-2 mb-3">
+                                        <span class="inline-block w-1.5 h-5 bg-accent rounded-full"></span>聯絡我們
+                                    </h3>
+                                    ${contactRow('客服信箱', m.email ? `<span data-live-path="compliance.merchant.email">${m.email}</span>` : '')}
+                                    ${contactRow('客服電話', m.phone ? `<span data-live-path="compliance.merchant.phone">${m.phone}</span>` : '')}
+                                    ${contactRow('客服時間', m.serviceHours ? `<span data-live-path="compliance.merchant.serviceHours">${m.serviceHours}</span>` : '')}
+                                </div>
+                                <div class="space-y-2.5">
+                                    <h3 class="text-base font-black text-primary flex items-center gap-2 mb-3">
+                                        <span class="inline-block w-1.5 h-5 bg-accent rounded-full"></span>服務條款與政策
+                                    </h3>
+                                    ${footerLinks}
                                 </div>
                             </div>
-                            <div class="bg-white border border-slate-200 rounded-2xl px-5 md:px-6 py-1">
-                                ${policy('隱私權政策', 'compliance.privacyPolicy', c.privacyPolicy)}
-                                ${policy('服務條款', 'compliance.terms', c.terms)}
-                                ${policy('退換貨與退費政策', 'compliance.refundPolicy', c.refundPolicy)}
-                            </div>
-                            <p class="text-center text-[11px] opacity-50 pt-2">
-                                © ${year}${copyName ? ` ${copyName}` : ''}. 版權所有 All Rights Reserved.
-                            </p>
+                            ${copyrightLine ? `<p data-live-path="compliance.copyright" class="text-[11px] md:text-xs opacity-50 pt-6 border-t border-slate-200/60">${copyrightLine}</p>` : ''}
                         </div>
                     </footer>
+
+                    <!-- 政策全頁（預設隱藏，點頁尾連結於新分頁以 #hash 開啟） -->
+                    ${overlays}
+                    <style>
+                        .legal-doc {
+                            position: fixed;
+                            inset: 0;
+                            z-index: 9999;
+                            overflow-y: auto;
+                            background-color: var(--bg-color, #f8fafc);
+                            color: var(--text-color, #0f172a);
+                        }
+                    </style>
+                    <script>
+                        (function () {
+                            function renderLegalDoc() {
+                                var hash = (location.hash || '').replace('#', '');
+                                var docs = document.querySelectorAll('.legal-doc');
+                                var shown = false;
+                                docs.forEach(function (d) {
+                                    var s = d.id === hash;
+                                    d.style.display = s ? 'block' : 'none';
+                                    if (s) shown = true;
+                                });
+                                if (document.body) document.body.style.overflow = shown ? 'hidden' : '';
+                                if (shown) window.scrollTo(0, 0);
+                            }
+                            window.addEventListener('hashchange', renderLegalDoc);
+                            if (document.readyState !== 'loading') renderLegalDoc();
+                            else window.addEventListener('DOMContentLoaded', renderLegalDoc);
+                        })();
+                    </script>
                 `;
                 break;
             }

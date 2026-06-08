@@ -28,7 +28,7 @@ export default function EditorPane() {
     { id: 'advanced', label: '加分區塊', icon: <Layers size={14} /> },
     { id: 'layout', label: '佈局排序', icon: <LayoutTemplate size={14} /> },
     { id: 'theme', label: '自訂配色', icon: <Palette size={14} /> },
-    { id: 'compliance', label: '金流合規', icon: <ShieldCheck size={14} /> },
+    { id: 'compliance', label: '金流申請用', icon: <ShieldCheck size={14} /> },
     { id: 'history', label: '版本紀錄', icon: <History size={14} /> },
   ];
 
