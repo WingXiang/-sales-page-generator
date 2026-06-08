@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useStore } from '../../store/useStore';
 import { Building, Image as ImageIcon, Frown, Cuboid, Tags, Plus, Trash2, GripVertical, MousePointer, ClipboardList } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -16,8 +16,10 @@ const coreMenuItems = [
 ];
 
 export default function CoreTab() {
-  const { state, updateField, updateMeta, updateStateByPath } = useStore();
-  const [activeExpanded, setActiveExpanded] = useState(null);
+  const { state, updateField, updateMeta, updateStateByPath, activeExpandedSection, setActiveExpandedSection } = useStore();
+  // 展開狀態以 store 為準，讓「點預覽元素 → 左側跳到對應區塊」可運作
+  const activeExpanded = activeExpandedSection;
+  const setActiveExpanded = setActiveExpandedSection;
 
   const getLayoutId = (itemId) => {
     return itemId === 'brand' ? 'about' : itemId;

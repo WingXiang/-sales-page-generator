@@ -14,7 +14,7 @@ export default function EditorModals() {
 
   if (activeModal === 'templates') {
     return (
-      <Modal title="選擇銷售頁範本" icon={<LayoutGrid size={16} className="text-primary" />} onClose={close} maxWidth="max-w-lg">
+      <Modal title="選擇銷售頁範本" icon={<LayoutGrid size={16} className="text-primary" />} onClose={close} maxWidth="max-w-2xl">
         <PageTemplates />
       </Modal>
     );
