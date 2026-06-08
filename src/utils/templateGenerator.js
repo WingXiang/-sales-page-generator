@@ -6,7 +6,7 @@ function getOptimalGridClass(count) {
     return 'grid-cols-1 md:grid-cols-3';
 }
 
-export function generateInnerHTMLContent(state, deviceMode) {
+export function generateInnerHTMLContent(state, deviceMode, forPreview = false) {
     let html = '';
 
     const cta1Index = state.layout ? state.layout.indexOf('cta1') : -1;
@@ -486,8 +486,9 @@ export function generateInnerHTMLContent(state, deviceMode) {
 
                 const contactRow = (label, value) => value ? `<p class="opacity-80"><span class="opacity-60">${label}：</span>${value}</p>` : '';
 
+                const linkTarget = forPreview ? '' : ' target="_blank" rel="noopener"';
                 const footerLinks = docs.map(d => `
-                    <a href="#${d.id}" target="_blank" rel="noopener" class="legal-link block opacity-80 hover:opacity-100 hover:text-primary transition-colors w-fit">${d.title}</a>
+                    <a href="#${d.id}"${linkTarget} class="legal-link block opacity-80 hover:opacity-100 hover:text-primary transition-colors w-fit">${d.title}</a>
                 `).join('');
 
                 const copyrightLine = sub(c.copyright || '');
@@ -497,9 +498,9 @@ export function generateInnerHTMLContent(state, deviceMode) {
                         <div class="max-w-3xl mx-auto px-6 py-12 md:py-16">
                             <div class="flex items-center justify-between gap-4 mb-8 pb-4 border-b-2 border-primary">
                                 <h1 class="text-xl md:text-2xl font-black text-primary">${d.title}</h1>
-                                <a href="#" onclick="event.preventDefault(); location.hash='';" class="text-xs md:text-sm font-bold text-primary border border-primary/30 rounded-full px-4 py-1.5 hover:bg-primary hover:text-white transition-colors shrink-0">← 返回</a>
+                                <a href="#" onclick="event.preventDefault(); location.hash='';" class="legal-back text-xs md:text-sm font-bold text-primary border border-primary/30 rounded-full px-4 py-1.5 hover:bg-primary hover:text-white transition-colors shrink-0">← 返回銷售頁</a>
                             </div>
-                            <div data-live-path="${d.path}" class="text-sm leading-loose opacity-80 whitespace-pre-line">${nl2br(d.text)}</div>
+                            <div class="text-sm leading-loose opacity-80 whitespace-pre-line">${nl2br(d.text)}</div>
                             ${copyrightLine ? `<p class="mt-12 pt-6 border-t border-slate-200/60 text-[11px] opacity-50">${copyrightLine}</p>` : ''}
                         </div>
                     </section>
@@ -525,7 +526,7 @@ export function generateInnerHTMLContent(state, deviceMode) {
                                     ${footerLinks}
                                 </div>
                             </div>
-                            ${copyrightLine ? `<p data-live-path="compliance.copyright" class="text-[11px] md:text-xs opacity-50 pt-6 border-t border-slate-200/60">${copyrightLine}</p>` : ''}
+                            ${copyrightLine ? `<p class="text-[11px] md:text-xs opacity-50 pt-6 border-t border-slate-200/60">${copyrightLine}</p>` : ''}
                         </div>
                     </footer>
 
