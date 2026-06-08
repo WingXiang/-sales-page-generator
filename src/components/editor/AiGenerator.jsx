@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { useStore } from '../../store/useStore';
 import { Wand2, Upload, FileText, Loader2, X } from 'lucide-react';
 
@@ -85,7 +86,7 @@ export default function AiGenerator() {
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
-            fullText += textContent.items.map(s => s.str).join(" ") + "\\n";
+            fullText += textContent.items.map(s => s.str).join(" ") + "\n";
           }
           resolve(fullText);
         } catch (error) {
@@ -149,7 +150,7 @@ export default function AiGenerator() {
     updateStateByPath('promise', {
       title: '加入培訓後您將獲得的具體改變',
       items: [
-        { text: '每週釋放至少 15 小時 the 繁雜行政時間' }, // Wait, in useStore it's '每週釋放至少 15 小時的繁雜行政時間'
+        { text: '每週釋放至少 15 小時的繁雜行政時間' },
         { text: '擁有一套全自動的線上客戶預約與諮詢交付系統' },
         { text: '學會如何用數位工具自動化過濾高價值客戶' }
       ]
@@ -256,7 +257,9 @@ export default function AiGenerator() {
       ? uploadedFiles.map(f => `[檔案：${f.name}]\n${f.text}`).join('\n\n')
       : '無參考檔案。';
 
-    const apiKey = "AIzaSyBgUlpyCC0J4tEkA1PYusCV7--HkIIy2Gc";
+    // Gemini key 已移至 serverless proxy 後端，前端僅呼叫代理端點。
+    // 可用 VITE_AI_PROXY_URL 指向你的 Vercel function（預設同源 /api/generate）。
+    const AI_PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || '/api/generate';
     const promptText = `你是一位頂尖的行銷文案大師。請為以下產品撰寫完整的銷售頁（Landing Page）文案：
 課程/產品名稱：${courseName}
 帶給學生的具體轉變與成果：${transformation}
@@ -387,25 +390,13 @@ ${filesText}
 }`;
 
     try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [{ text: promptText }]
-              }
-            ],
-            generationConfig: {
-              responseMimeType: "application/json"
-            }
-          })
-        }
-      );
+      const response = await fetch(AI_PROXY_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: promptText })
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

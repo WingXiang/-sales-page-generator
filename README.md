@@ -45,6 +45,30 @@
 
 ---
 
+## 🔐 AI 文案生成的安全代理 (Serverless Proxy)
+
+為避免 Gemini API Key 被打包進前端靜態檔案而遭盜用，AI 一鍵生成的請求會先送到一個 serverless 代理端點，由後端持有 Key 後再轉呼叫 Gemini。代理程式位於 [`api/generate.js`](api/generate.js)，採 Vercel Serverless Function 格式。
+
+### 部署方式（擇一）
+
+**方案 A：前後端都部署在 Vercel（最簡單）**
+
+1. 將本專案匯入 [Vercel](https://vercel.com/)（會自動偵測 Vite 與 `/api` 目錄）。
+2. 在 Vercel 專案的 **Settings → Environment Variables** 新增：
+   - `GEMINI_API_KEY`：你的 Google Gemini API Key（必填）
+   - `ALLOWED_ORIGIN`：允許呼叫的前端網域（選填，建議鎖定）
+3. 前端的 `VITE_AI_PROXY_URL` 留空即可（預設打同源的 `/api/generate`）。
+
+**方案 B：前端留在 GitHub Pages、代理另放 Vercel**
+
+1. 僅將 `/api` 部署到 Vercel，並設定上述 `GEMINI_API_KEY`。
+2. 在前端 build 時設定環境變數 `VITE_AI_PROXY_URL=https://your-proxy.vercel.app/api/generate`。
+3. 在 Vercel 設定 `ALLOWED_ORIGIN` 為你的 GitHub Pages 網域，避免代理被任意盜用消耗額度。
+
+> 若代理未部署或連線失敗，AI 生成會自動降級為「本地備用智慧生成系統」，不影響其他功能。
+
+---
+
 ## 💻 本地開發與編譯
 
 請確保您的電腦已安裝 [Node.js](https://nodejs.org/) (推薦版本 v20 以上)。

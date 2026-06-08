@@ -461,6 +461,67 @@ export function generateInnerHTMLContent(state, deviceMode) {
             case 'cta3':
                 html += renderCTASection('cta3', state.cta3);
                 break;
+
+            case 'complianceFooter': {
+                const c = state.compliance || {};
+                const m = c.merchant || {};
+                const nl2br = (t) => (t || '').replace(/\\n/g, '\n').replace(/\n/g, '<br>');
+
+                const infoRow = (label, path, value) => value ? `
+                    <div class="flex gap-2">
+                        <span class="font-bold shrink-0 opacity-60">${label}</span>
+                        <span data-live-path="${path}" class="opacity-80 break-all">${value}</span>
+                    </div>
+                ` : '';
+
+                const policy = (title, path, text) => (text && text.trim()) ? `
+                    <details class="border-t border-slate-200/70 first:border-t-0 py-3.5 group">
+                        <summary class="font-bold text-sm flex items-center justify-between cursor-pointer list-none select-none outline-none text-primary">
+                            <span class="flex items-center gap-2"><span class="inline-block w-1 h-4 bg-accent rounded-full"></span>${title}</span>
+                            <span class="transition-transform duration-300 group-open:rotate-180 shrink-0 font-black text-accent">＋</span>
+                        </summary>
+                        <p data-live-path="${path}" class="text-xs leading-relaxed opacity-70 pt-3 whitespace-pre-line">${nl2br(text)}</p>
+                    </details>
+                ` : '';
+
+                const merchantRows = [
+                    infoRow('商號／公司名稱', 'compliance.merchant.companyName', m.companyName),
+                    infoRow('統一編號', 'compliance.merchant.taxId', m.taxId),
+                    infoRow('負責人', 'compliance.merchant.responsiblePerson', m.responsiblePerson),
+                    infoRow('客服電話', 'compliance.merchant.phone', m.phone),
+                    infoRow('客服信箱', 'compliance.merchant.email', m.email),
+                    infoRow('營業地址', 'compliance.merchant.address', m.address),
+                    infoRow('客服時間', 'compliance.merchant.serviceHours', m.serviceHours)
+                ].join('');
+
+                const year = new Date().getFullYear();
+                const copyName = m.companyName || state.brandInfo?.brandName || '';
+
+                html += `
+                    <!-- 金流合規頁尾：商家資訊與法律政策 -->
+                    <footer id="section-complianceFooter" class="border-t-4 border-primary pt-12 mt-8 text-slate-600 animate-fade-in transition-all duration-300">
+                        <div class="max-w-4xl mx-auto space-y-8">
+                            <div class="space-y-4">
+                                <h3 class="text-base font-black text-primary flex items-center gap-2">
+                                    <span class="inline-block w-1.5 h-5 bg-accent rounded-full"></span>商家資訊
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2.5 text-xs md:text-sm bg-slate-50 border border-slate-200 rounded-2xl p-5 md:p-6">
+                                    ${merchantRows}
+                                </div>
+                            </div>
+                            <div class="bg-white border border-slate-200 rounded-2xl px-5 md:px-6 py-1">
+                                ${policy('隱私權政策', 'compliance.privacyPolicy', c.privacyPolicy)}
+                                ${policy('服務條款', 'compliance.terms', c.terms)}
+                                ${policy('退換貨與退費政策', 'compliance.refundPolicy', c.refundPolicy)}
+                            </div>
+                            <p class="text-center text-[11px] opacity-50 pt-2">
+                                © ${year}${copyName ? ` ${copyName}` : ''}. 版權所有 All Rights Reserved.
+                            </p>
+                        </div>
+                    </footer>
+                `;
+                break;
+            }
         }
     });
 

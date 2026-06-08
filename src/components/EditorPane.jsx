@@ -3,11 +3,12 @@ import { useStore } from '../store/useStore';
 import { 
   Settings, 
   Layers, 
-  LayoutTemplate, 
-  Palette, 
+  LayoutTemplate,
+  Palette,
   Download,
   CloudUpload,
-  History
+  History,
+  ShieldCheck
 } from 'lucide-react';
 
 import CoreTab from './editor/CoreTab';
@@ -15,6 +16,7 @@ import AdvancedTab from './editor/AdvancedTab';
 import LayoutTab from './editor/LayoutTab';
 import ThemeTab from './editor/ThemeTab';
 import HistoryTab from './editor/HistoryTab';
+import ComplianceTab from './editor/ComplianceTab';
 import DeployTab from './DeployTab';
 import { exportHTML } from '../utils/exportHtml';
 
@@ -26,6 +28,7 @@ export default function EditorPane() {
     { id: 'advanced', label: '加分區塊', icon: <Layers size={14} /> },
     { id: 'layout', label: '佈局排序', icon: <LayoutTemplate size={14} /> },
     { id: 'theme', label: '自訂配色', icon: <Palette size={14} /> },
+    { id: 'compliance', label: '金流合規', icon: <ShieldCheck size={14} /> },
     { id: 'history', label: '版本紀錄', icon: <History size={14} /> },
   ];
 
@@ -64,6 +67,7 @@ export default function EditorPane() {
         {activeTab === 'advanced' && <AdvancedTab />}
         {activeTab === 'layout' && <LayoutTab />}
         {activeTab === 'theme' && <ThemeTab />}
+        {activeTab === 'compliance' && <ComplianceTab />}
         {activeTab === 'history' && <HistoryTab />}
         {activeTab === 'deploy' && <DeployTab />}
       </div>
