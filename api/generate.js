@@ -13,7 +13,20 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
+// 防呆：把友善名稱（Sonnet 4.6 / opus…）對應到正確的模型 ID，避免設錯值導致 404
+function resolveModel(raw) {
+  const fallback = 'claude-sonnet-4-6';
+  if (!raw || typeof raw !== 'string') return fallback;
+  const v = raw.trim();
+  if (v.startsWith('claude-')) return v; // 已是正式 ID
+  const map = {
+    opus: 'claude-opus-4-8', 'opus 4.8': 'claude-opus-4-8',
+    sonnet: 'claude-sonnet-4-6', 'sonnet 4.6': 'claude-sonnet-4-6',
+    haiku: 'claude-haiku-4-5', 'haiku 4.5': 'claude-haiku-4-5',
+  };
+  return map[v.toLowerCase()] || fallback;
+}
+const MODEL = resolveModel(process.env.ANTHROPIC_MODEL);
 
 const SYSTEM_PROMPT =
   '你是一位頂尖的中文行銷文案大師。請嚴格只輸出使用者要求的純 JSON 物件，' +
