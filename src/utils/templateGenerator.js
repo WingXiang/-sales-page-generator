@@ -85,7 +85,7 @@ export function generateInnerHTMLContent(state, deviceMode, forPreview = false) 
         return `
             <!-- 行動呼籲按鈕 ${id} -->
             <section id="section-${id}" class="z-10 relative flex ${alignClass} ${containerPadding} animate-fade-in transition-all duration-300">
-                <a href="${link}" data-live-path="${id}.text" class="cta-btn-custom font-bold shadow-lg hover:scale-105 active:scale-95 transition-all text-center" style="${btnStyle}">
+                <a href="${link}"${(link && link !== '#') ? ' target="_blank" rel="noopener noreferrer"' : ''} data-live-path="${id}.text" class="cta-btn-custom font-bold shadow-lg hover:scale-105 active:scale-95 transition-all text-center" style="${btnStyle}">
                     ${text}
                 </a>
             </section>

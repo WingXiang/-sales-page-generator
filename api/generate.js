@@ -10,7 +10,8 @@
 //
 // 部署：將本專案（含 /api 目錄）部署到 Vercel 即可，端點為 /api/generate。
 
-const GEMINI_MODEL = 'gemini-1.5-flash';
+// 使用 Google 維護的別名，永遠指向現役 flash 模型，避免模型停用導致失效
+const GEMINI_MODEL = 'gemini-flash-latest';
 
 export default async function handler(req, res) {
   const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';

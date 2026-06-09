@@ -155,9 +155,9 @@ export default function PreviewPane() {
               ${generateInnerHTMLContent(state, deviceMode, true)}
           </main>
           <script>
-            // Allow clicking to edit
+            // Allow clicking to edit（CTA 按鈕除外，保留其連結點擊行為）
             document.querySelectorAll('[data-live-path]').forEach(el => {
-                el.setAttribute('contenteditable', 'true');
+                if (!el.classList.contains('cta-btn-custom')) el.setAttribute('contenteditable', 'true');
             });
 
             document.addEventListener('input', (e) => {
@@ -189,18 +189,24 @@ export default function PreviewPane() {
             document.addEventListener('click', (e) => {
                 const link = e.target.closest('a');
                 if (link) {
-                    e.preventDefault();
+                    const href = link.getAttribute('href') || '';
                     // 返回銷售頁
                     if (link.classList.contains('legal-back')) {
+                        e.preventDefault();
                         showLegalDoc(null);
                         return;
                     }
                     // 開啟政策全頁
-                    const href = link.getAttribute('href') || '';
                     if (href.indexOf('#doc-') === 0) {
+                        e.preventDefault();
                         showLegalDoc(href.slice(1));
                         return;
                     }
+                    // 有實際連結的行動呼籲按鈕：讓它以 target=_blank 開新分頁
+                    if (link.classList.contains('cta-btn-custom') && href && href !== '#') {
+                        return;
+                    }
+                    e.preventDefault();
                 }
                 const target = e.target.closest('[data-live-path]');
                 if (target) {
@@ -247,9 +253,9 @@ export default function PreviewPane() {
                     const captureArea = document.getElementById('capture-area');
                     if (captureArea) {
                         captureArea.innerHTML = event.data.html;
-                        // Re-bind contenteditable after replacing innerHTML
+                        // Re-bind contenteditable after replacing innerHTML（CTA 除外）
                         document.querySelectorAll('[data-live-path]').forEach(el => {
-                            el.setAttribute('contenteditable', 'true');
+                            if (!el.classList.contains('cta-btn-custom')) el.setAttribute('contenteditable', 'true');
                         });
                     }
                 } else if (event.data && event.data.type === 'SCROLL_TO') {
