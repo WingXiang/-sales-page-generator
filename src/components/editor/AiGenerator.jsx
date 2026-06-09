@@ -403,11 +403,10 @@ ${filesText}
       }
 
       const result = await response.json();
-      if (!result.candidates || result.candidates.length === 0) {
-        throw new Error("No candidates returned from Gemini API");
+      const text = result.text;
+      if (!text) {
+        throw new Error("No text returned from Claude API");
       }
-
-      const text = result.candidates[0].content.parts[0].text;
       let jsonText = text.trim();
       if (jsonText.startsWith("```")) {
         jsonText = jsonText.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
