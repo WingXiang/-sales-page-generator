@@ -5,8 +5,10 @@
 //
 // 需在 Vercel 專案設定以下環境變數：
 //   ANTHROPIC_API_KEY  (必填) 你的 Anthropic API key（sk-ant-...）
-//   ANTHROPIC_MODEL    (選填) 模型 ID，預設 claude-sonnet-4-6（品質/成本平衡）；
-//                      想更省可改 claude-haiku-4-5，想更強可改 claude-opus-4-8
+//   ANTHROPIC_MODEL    (選填) 模型 ID，預設 claude-haiku-4-5（最快、最省，
+//                      可在 Vercel 免費方案 60s 上限內完成）；想要更高文案品質
+//                      可改 claude-sonnet-4-6 / claude-opus-4-8，但需 Vercel Pro
+//                      方案放寬函式逾時，否則大型輸出可能 504 逾時。
 //   ALLOWED_ORIGIN     (選填) 允許呼叫的前端網域，預設 '*'
 //
 // 回傳格式統一為 { text: "..." }（純文字，前端再自行解析 JSON）。
@@ -15,7 +17,7 @@ import Anthropic from '@anthropic-ai/sdk';
 
 // 防呆：把友善名稱（Sonnet 4.6 / opus…）對應到正確的模型 ID，避免設錯值導致 404
 function resolveModel(raw) {
-  const fallback = 'claude-sonnet-4-6';
+  const fallback = 'claude-haiku-4-5';
   if (!raw || typeof raw !== 'string') return fallback;
   const v = raw.trim();
   if (v.startsWith('claude-')) return v; // 已是正式 ID
