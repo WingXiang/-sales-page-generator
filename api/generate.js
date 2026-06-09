@@ -5,15 +5,15 @@
 //
 // 需在 Vercel 專案設定以下環境變數：
 //   ANTHROPIC_API_KEY  (必填) 你的 Anthropic API key（sk-ant-...）
-//   ANTHROPIC_MODEL    (選填) 模型 ID，預設 claude-opus-4-8；
-//                      想省成本可改 claude-sonnet-4-6 或 claude-haiku-4-5
+//   ANTHROPIC_MODEL    (選填) 模型 ID，預設 claude-sonnet-4-6（品質/成本平衡）；
+//                      想更省可改 claude-haiku-4-5，想更強可改 claude-opus-4-8
 //   ALLOWED_ORIGIN     (選填) 允許呼叫的前端網域，預設 '*'
 //
 // 回傳格式統一為 { text: "..." }（純文字，前端再自行解析 JSON）。
 
 import Anthropic from '@anthropic-ai/sdk';
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-4-8';
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
 
 const SYSTEM_PROMPT =
   '你是一位頂尖的中文行銷文案大師。請嚴格只輸出使用者要求的純 JSON 物件，' +
