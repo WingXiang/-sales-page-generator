@@ -389,63 +389,76 @@ ${filesText}
   "cta3": { "text": "主按鈕 3 文字" }
 }`;
 
-    try {
-      const response = await fetch(AI_PROXY_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt: promptText })
-      });
+    // 最多重試 2 次（共 3 次嘗試），應對偶發的 API 失敗
+    const MAX_ATTEMPTS = 2;
+    let lastError = null;
 
-      if (!response.ok) {
-        // 嘗試解析後端回傳的錯誤詳情
-        const errData = await response.json().catch(() => ({}));
-        const detail = errData.detail || errData.error || '';
-        throw new Error(`HTTP ${response.status}${detail ? '：' + detail : ''}`);
-      }
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        if (attempt > 1) {
+          setLoadingText(`🔄 第 ${attempt} 次重試中，請稍候...`);
+          await new Promise(r => setTimeout(r, 1500));
+        }
 
-      const result = await response.json();
-      const text = result.text;
-      if (!text) {
-        throw new Error("Claude API 回應為空");
-      }
-      let jsonText = text.trim();
-      // 去除可能的 markdown 程式碼區塊包裝
-      if (jsonText.startsWith("```")) {
-        jsonText = jsonText.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
-      }
-      // 截取第一個 { 到最後一個 } 之間的內容（防止前後有多餘文字）
-      const firstBrace = jsonText.indexOf('{');
-      const lastBrace = jsonText.lastIndexOf('}');
-      if (firstBrace !== -1 && lastBrace !== -1) {
-        jsonText = jsonText.slice(firstBrace, lastBrace + 1);
-      }
+        const response = await fetch(AI_PROXY_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: promptText }),
+        });
 
-      const cleanJson = JSON.parse(jsonText);
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          const detail = errData.detail || errData.error || '';
+          throw new Error(`HTTP ${response.status}${detail ? '：' + detail : ''}`);
+        }
 
-      if (cleanJson) {
+        const result = await response.json();
+        const text = result.text;
+        if (!text) throw new Error('Claude API 回應為空');
+
+        // 後端已做過 prefill + JSON 驗證，此處只做防禦性清理
+        let jsonText = text.trim();
+        // 去除殘留的 markdown 包裝（以防萬一）
+        if (jsonText.startsWith('```')) {
+          jsonText = jsonText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+        }
+        // 截取 { ... } 區間
+        const fb = jsonText.indexOf('{');
+        const lb = jsonText.lastIndexOf('}');
+        if (fb !== -1 && lb !== -1) jsonText = jsonText.slice(fb, lb + 1);
+
+        const cleanJson = JSON.parse(jsonText);
+        if (!cleanJson) throw new Error('解析後的 JSON 為空');
+
+        // 把所有欄位寫入 store
         Object.keys(cleanJson).forEach(sectionKey => {
-          if (typeof cleanJson[sectionKey] === 'object' && !Array.isArray(cleanJson[sectionKey])) {
-            Object.keys(cleanJson[sectionKey]).forEach(fieldKey => {
-              updateStateByPath(`${sectionKey}.${fieldKey}`, cleanJson[sectionKey][fieldKey]);
+          const val = cleanJson[sectionKey];
+          if (val && typeof val === 'object' && !Array.isArray(val)) {
+            Object.keys(val).forEach(fieldKey => {
+              updateStateByPath(`${sectionKey}.${fieldKey}`, val[fieldKey]);
             });
           } else {
-            updateStateByPath(sectionKey, cleanJson[sectionKey]);
+            updateStateByPath(sectionKey, val);
           }
         });
-        toast.success("✨ AI 一鍵生成銷售頁文案成功！");
-      } else {
-        throw new Error("解析後的 JSON 為空");
+
+        toast.success('✨ AI 一鍵生成銷售頁文案成功！');
+        lastError = null;
+        break; // 成功，跳出重試迴圈
+
+      } catch (err) {
+        console.error(`AI 生成錯誤（第 ${attempt} 次）：`, err);
+        lastError = err;
+        // 若是最後一次仍失敗，才 fallback
+        if (attempt === MAX_ATTEMPTS) {
+          runBackupLocalGeneration();
+          toast.error(`⚠️ AI 生成失敗（${err.message}），已啟用本地備用文案。`, { duration: 8000 });
+        }
       }
-    } catch (err) {
-      console.error("AI 生成錯誤：", err);
-      runBackupLocalGeneration();
-      toast.error(`⚠️ AI 生成失敗（${err.message}），已啟用本地備用文案。`, { duration: 6000 });
-    } finally {
-      clearInterval(loadingInterval);
-      setLoading(false);
     }
+
+    clearInterval(loadingInterval);
+    setLoading(false);
   };
 
   const handleGenerateClick = () => {
