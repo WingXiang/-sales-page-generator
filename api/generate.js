@@ -63,7 +63,7 @@ export default async function handler(req, res) {
       model: MODEL,
       max_tokens: 8192,
       system: SYSTEM_PROMPT,
-      thinking: { type: 'disabled' }, // 關閉思考以控制成本與延遲
+      // 注意：thinking 參數僅 Opus/Sonnet 支援，Haiku 不可傳此參數
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -73,9 +73,19 @@ export default async function handler(req, res) {
       .map((b) => b.text)
       .join('');
 
+    if (!text) {
+      return res.status(500).json({ error: 'Claude API 回應為空，請稍後再試。', model: MODEL });
+    }
+
     return res.status(200).json({ text });
   } catch (err) {
     const status = err?.status && Number.isInteger(err.status) ? err.status : 500;
-    return res.status(status).json({ error: 'Claude API 呼叫失敗', detail: String(err?.message || err) });
+    // 印出詳細錯誤方便 Vercel log 追蹤
+    console.error('[generate] Claude API error:', status, err?.message, JSON.stringify(err?.error || {}));
+    return res.status(status).json({
+      error: 'Claude API 呼叫失敗',
+      detail: String(err?.message || err),
+      model: MODEL,
+    });
   }
 }

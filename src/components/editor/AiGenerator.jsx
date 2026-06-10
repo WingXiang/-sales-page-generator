@@ -399,21 +399,31 @@ ${filesText}
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // 嘗試解析後端回傳的錯誤詳情
+        const errData = await response.json().catch(() => ({}));
+        const detail = errData.detail || errData.error || '';
+        throw new Error(`HTTP ${response.status}${detail ? '：' + detail : ''}`);
       }
 
       const result = await response.json();
       const text = result.text;
       if (!text) {
-        throw new Error("No text returned from Claude API");
+        throw new Error("Claude API 回應為空");
       }
       let jsonText = text.trim();
+      // 去除可能的 markdown 程式碼區塊包裝
       if (jsonText.startsWith("```")) {
-        jsonText = jsonText.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+        jsonText = jsonText.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
       }
-      
+      // 截取第一個 { 到最後一個 } 之間的內容（防止前後有多餘文字）
+      const firstBrace = jsonText.indexOf('{');
+      const lastBrace = jsonText.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        jsonText = jsonText.slice(firstBrace, lastBrace + 1);
+      }
+
       const cleanJson = JSON.parse(jsonText);
-      
+
       if (cleanJson) {
         Object.keys(cleanJson).forEach(sectionKey => {
           if (typeof cleanJson[sectionKey] === 'object' && !Array.isArray(cleanJson[sectionKey])) {
@@ -426,12 +436,12 @@ ${filesText}
         });
         toast.success("✨ AI 一鍵生成銷售頁文案成功！");
       } else {
-        throw new Error("Parsed JSON is empty");
+        throw new Error("解析後的 JSON 為空");
       }
     } catch (err) {
-      console.warn("Gemini API error, falling back to local generator:", err);
+      console.error("AI 生成錯誤：", err);
       runBackupLocalGeneration();
-      toast.error("⚠️ AI 連線失敗或格式不合，已自動啟用本地備用智慧生成系統。");
+      toast.error(`⚠️ AI 生成失敗（${err.message}），已啟用本地備用文案。`, { duration: 6000 });
     } finally {
       clearInterval(loadingInterval);
       setLoading(false);
