@@ -253,141 +253,26 @@ export default function AiGenerator() {
     const transformation = state.meta?.transformation || '節省時間，專心發展事業';
     const audience = state.meta?.audience || '一人公司經營者';
     const style = state.meta?.style || '';
+    // 截取 PDF 文字避免 prompt 過長、生成超時（每份最多 1500 字）
+    const MAX_FILE_CHARS = 1500;
     const filesText = uploadedFiles.length > 0
-      ? uploadedFiles.map(f => `[檔案：${f.name}]\n${f.text}`).join('\n\n')
+      ? uploadedFiles.map(f => `[檔案：${f.name}]\n${f.text.slice(0, MAX_FILE_CHARS)}`).join('\n\n')
       : '無參考檔案。';
 
     // Gemini key 已移至 serverless proxy 後端，前端僅呼叫代理端點。
     // 可用 VITE_AI_PROXY_URL 指向你的 Vercel function（預設同源 /api/generate）。
     const AI_PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || '/api/generate';
-    const promptText = `你是一位頂尖的行銷文案大師。請為以下產品撰寫完整的銷售頁（Landing Page）文案：
-課程/產品名稱：${courseName}
-帶給學生的具體轉變與成果：${transformation}
+    const promptText = `你是頂尖行銷文案大師。為以下產品生成銷售頁文案。
+【重要】每個字串值請精簡有力，控制在 50 字以內；title/quote 類標題控制在 25 字以內。
+
+課程名稱：${courseName}
+帶給學員的成果：${transformation}
 目標受眾：${audience}
-品牌網站資訊/背景說明：${style}
-參考上傳檔案內容：
-${filesText}
+品牌資訊：${style || '無'}
+參考資料：${filesText}
 
-請將文案撰寫成符合以下 JSON 格式的資料，請不要有任何 markdown 格式的程式碼區塊標記 (例如 \`\`\`json) 或任何其他說明文字，必須是純 JSON 物件：
-
-{
-  "meta": {
-    "painTitleMain": "針對受眾的一人公司營運/生活瓶頸或痛點的主標題",
-    "currTitleMain": "大綱/核心服務的標題",
-    "qualTitleMain": "適合誰/篩選條件的標題",
-    "testTitleMain": "見證/好評的標題",
-    "priceTitleMain": "定價/方案的標題",
-    "faqTitleMain": "常見問答的標題"
-  },
-  "brandInfo": {
-    "brandName": "品牌或學院名稱",
-    "aboutTitle": "關於團隊/創辦人的標題",
-    "aboutText": "團隊或創辦人簡介文案，說明使命以及如何幫助受眾",
-    "contactEmail": "support@example.com",
-    "contactLine": "@line_id"
-  },
-  "hero": {
-    "title": "主視覺超強吸引力主標題 (可用 \\n 換行，字數約 20-30 字，強調痛點解決或驚人轉變)",
-    "bullets": [
-      { "text": "吸引人的亮點/承諾 1" },
-      { "text": "吸引人的亮點/承諾 2" },
-      { "text": "吸引人的亮點/承諾 3" }
-    ]
-  },
-  "painPoints": [
-    { "title": "痛點 1 標題", "desc": "痛點 1 詳細描述" },
-    { "title": "痛點 2 標題", "desc": "痛點 2 詳細描述" },
-    { "title": "痛點 3 標題", "desc": "痛點 3 詳細描述" }
-  ],
-  "empathy": {
-    "quote": "創辦人或金句引用「...」 (可用 \\n 換行)",
-    "text": "感同身受的自白文案，說明自己也曾經歷同樣痛苦，直到發現了解決方案"
-  },
-  "transition": {
-    "title": "思維翻轉/對比區塊標題",
-    "cards": [
-      { "title": "傳統/錯誤的舊做法", "desc": "舊做法的弊端" },
-      { "title": "高效/我們的新系統做法", "desc": "新做法的優勢與回報" }
-    ]
-  },
-  "promise": {
-    "title": "加入/使用後能獲得的具體改變標題",
-    "items": [
-      { "text": "具體改變/好處 1" },
-      { "text": "具體改變/好處 2" },
-      { "text": "具體改變/好處 3" }
-    ]
-  },
-  "services": {
-    "title": "核心服務/模組標題",
-    "items": [
-      { "name": "核心模組/服務 1 名稱", "desc": "詳細的描述" },
-      { "name": "核心模組/服務 2 名稱", "desc": "詳細的描述" },
-      { "name": "核心模組/服務 3 名稱", "desc": "詳細的描述" }
-    ]
-  },
-  "curriculum": [
-    { "title": "大綱/步驟階段一", "content": "詳細單元內容與實作目標" },
-    { "title": "大綱/步驟階段二", "content": "詳細單元內容與實作目標" },
-    { "title": "大綱/步驟階段三", "content": "詳細單元內容與實作目標" }
-  ],
-  "authority": {
-    "name": "專家/講師姓名",
-    "bio": "專家背景資歷簡介，強調在這個領域的成功案例或專業能力",
-    "stats": [
-      { "label": "關鍵數據 1 (例如：累積學員)", "value": "數值 (例如：3,000+ 人)" },
-      { "label": "關鍵數據 2 (例如：學員滿意度)", "value": "數值 (例如：98.5%)" }
-    ]
-  },
-  "qualification": {
-    "fit": [
-      { "text": "最適合本產品的人群特徵 1" },
-      { "text": "最適合本產品的人群特徵 2" },
-      { "text": "最適合本產品的人群特徵 3" }
-    ],
-    "unfit": [
-      { "text": "不適合本產品的人群特徵 1" },
-      { "text": "不適合本產品的人群特徵 2" }
-    ]
-  },
-  "testimonials": [
-    { "name": "見證學員 A 姓名", "role": "頭銜/角色 (例如: 自由創作者)", "content": "真實的好評內容，提及解決了什麼具體痛點，釋放了多少時間或增加了多少收入" },
-    { "name": "見證學員 B 姓名", "role": "頭銜/角色", "content": "好評內容" }
-  ],
-  "pricingPlans": [
-    {
-      "title": "初階方案名稱",
-      "originalPrice": "原始價格 (數字即可)",
-      "currentPrice": "優惠特價 (數字即可)",
-      "urgency": "急迫感標籤 (例如: 早鳥優惠剩 5 席)",
-      "features": "方案包含的特色 (用 \\n 隔開)",
-      "ctaText": "按鈕文字",
-      "ctaLink": "#",
-      "guarantee": "退費保證或信心保障文字"
-    },
-    {
-      "title": "高階方案/VIP名稱",
-      "originalPrice": "原始價格",
-      "currentPrice": "特價",
-      "urgency": "限量標籤 (例如: 每月限 3 名額)",
-      "features": "方案包含的特色 (用 \\n 隔開)",
-      "ctaText": "按鈕文字",
-      "ctaLink": "#",
-      "guarantee": "退費保證或信心保障文字"
-    }
-  ],
-  "faq": [
-    { "q": "常見問答問題 1", "a": "常見問答回覆 1" },
-    { "q": "常見問答問題 2", "a": "常見問答回覆 2" },
-    { "q": "常見問答問題 3", "a": "常見問答回覆 3" }
-  ],
-  "close": {
-    "text": "呼籲行動的感性結尾文案"
-  },
-  "cta1": { "text": "主按鈕 1 文字" },
-  "cta2": { "text": "主按鈕 2 文字" },
-  "cta3": { "text": "主按鈕 3 文字" }
-}`;
+請直接輸出純 JSON，格式如下，欄位含義已標示：
+{"meta":{"painTitleMain":"痛點區主標題","currTitleMain":"大綱區標題","qualTitleMain":"篩選區標題","testTitleMain":"見證區標題","priceTitleMain":"定價區標題","faqTitleMain":"FAQ標題"},"brandInfo":{"brandName":"品牌名稱","aboutTitle":"關於我們標題","aboutText":"品牌使命簡介(50字內)","contactEmail":"support@example.com","contactLine":"@line_id"},"hero":{"title":"主視覺標題(25字內,可用\\n換行,強調轉變)","bullets":[{"text":"亮點1(20字內)"},{"text":"亮點2(20字內)"},{"text":"亮點3(20字內)"}]},"painPoints":[{"title":"痛點1標題","desc":"描述(40字內)"},{"title":"痛點2標題","desc":"描述(40字內)"},{"title":"痛點3標題","desc":"描述(40字內)"}],"empathy":{"quote":"創辦人金句(可用\\n換行,25字內)","text":"感同身受的自白(50字內)"},"transition":{"title":"對比區標題","cards":[{"title":"舊方法","desc":"弊端(30字內)"},{"title":"新方法","desc":"優勢(30字內)"}]},"promise":{"title":"承諾標題","items":[{"text":"好處1(20字內)"},{"text":"好處2(20字內)"},{"text":"好處3(20字內)"}]},"services":{"title":"服務/模組標題","items":[{"name":"服務1名稱","desc":"說明(30字內)"},{"name":"服務2名稱","desc":"說明(30字內)"},{"name":"服務3名稱","desc":"說明(30字內)"}]},"curriculum":[{"title":"階段一","content":"內容(30字內)"},{"title":"階段二","content":"內容(30字內)"},{"title":"階段三","content":"內容(30字內)"}],"authority":{"name":"講師姓名","bio":"背景資歷(50字內)","stats":[{"label":"數據標籤1","value":"值"},{"label":"數據標籤2","value":"值"}]},"qualification":{"fit":[{"text":"適合特徵1(20字內)"},{"text":"適合特徵2(20字內)"},{"text":"適合特徵3(20字內)"}],"unfit":[{"text":"不適合1(20字內)"},{"text":"不適合2(20字內)"}]},"testimonials":[{"name":"學員A","role":"角色","content":"好評(50字內)"},{"name":"學員B","role":"角色","content":"好評(50字內)"}],"pricingPlans":[{"title":"初階方案","originalPrice":"原價數字","currentPrice":"特價數字","urgency":"急迫感標籤","features":"特色1\\n特色2\\n特色3","ctaText":"按鈕文字","ctaLink":"#","guarantee":"退費保障說明"},{"title":"高階方案","originalPrice":"原價數字","currentPrice":"特價數字","urgency":"限量標籤","features":"特色1\\n特色2\\n特色3","ctaText":"按鈕文字","ctaLink":"#","guarantee":"退費保障說明"}],"faq":[{"q":"問題1","a":"回答(40字內)"},{"q":"問題2","a":"回答(40字內)"},{"q":"問題3","a":"回答(40字內)"}],"close":{"text":"感性結尾CTA(50字內)"},"cta1":{"text":"按鈕1文字"},"cta2":{"text":"按鈕2文字"},"cta3":{"text":"按鈕3文字"}}`;
 
     // 最多重試 2 次（共 3 次嘗試），應對偶發的 API 失敗
     const MAX_ATTEMPTS = 2;
@@ -400,11 +285,20 @@ ${filesText}
           await new Promise(r => setTimeout(r, 1500));
         }
 
-        const response = await fetch(AI_PROXY_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: promptText }),
-        });
+        // 55s 超時保護：Vercel 上限 60s，提前中斷可拿到乾淨的 timeout 錯誤
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 55000);
+        let response;
+        try {
+          response = await fetch(AI_PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: promptText }),
+            signal: controller.signal,
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));

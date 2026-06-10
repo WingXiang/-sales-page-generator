@@ -76,11 +76,11 @@ export default async function handler(req, res) {
     // ───────────────────────────────────────────────────────────────────
     const message = await client.messages.create({
       model: MODEL,
-      max_tokens: 8192,
+      max_tokens: 4096, // 精簡輸出（前端 prompt 已限制每欄 50 字）可降至 4096，減少生成時間
       system: SYSTEM_PROMPT,
       messages: [
         { role: 'user', content: prompt },
-        { role: 'assistant', content: '{' }, // 預填 JSON 開頭
+        { role: 'assistant', content: '{' }, // 預填 JSON 開頭，強制模型從 { 繼續
       ],
     });
 
