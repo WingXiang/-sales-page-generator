@@ -3,6 +3,136 @@ import toast from 'react-hot-toast';
 import { useStore } from '../../store/useStore';
 import { Wand2, Upload, FileText, Loader2, X } from 'lucide-react';
 
+// ── AI 錯誤碼對照表 ──────────────────────────────────────────────────────────
+// 對應後端 api/generate.js 回傳的 `code` 欄位
+const AI_ERROR_MAP = {
+  NO_CREDITS: {
+    emoji: '💳', title: 'Anthropic 點數不足',
+    body: '您的 Anthropic 帳戶餘額已用完，無法繼續生成文案。',
+    actionLabel: '前往 Anthropic 儲值', actionUrl: 'https://console.anthropic.com/settings/billing',
+    persistent: true, retryable: false,
+  },
+  NO_KEY_ENV: {
+    emoji: '🔑', title: '伺服器未設定 API Key',
+    body: '後端缺少 ANTHROPIC_API_KEY，請到 Vercel 環境變數新增後重新部署。',
+    actionLabel: '前往 Vercel 設定', actionUrl: 'https://vercel.com/dashboard',
+    persistent: true, retryable: false,
+  },
+  BAD_KEY: {
+    emoji: '🔑', title: 'API Key 無效或已失效',
+    body: 'ANTHROPIC_API_KEY 設定有誤，請到 Vercel 環境變數重新確認。',
+    actionLabel: '前往 Vercel 設定', actionUrl: 'https://vercel.com/dashboard',
+    persistent: true, retryable: false,
+  },
+  BAD_MODEL: {
+    emoji: '❓', title: 'AI 模型 ID 設定錯誤',
+    body: '找不到指定的模型，請到 Vercel 確認 ANTHROPIC_MODEL 環境變數是否正確。',
+    actionLabel: '前往 Vercel 設定', actionUrl: 'https://vercel.com/dashboard',
+    persistent: true, retryable: false,
+  },
+  RATE_LIMIT: {
+    emoji: '⏳', title: '請求頻率過高',
+    body: '短時間內呼叫次數超過 Anthropic 限制，請稍候 30 秒後再試。',
+    persistent: false, retryable: true,
+  },
+  OVERLOADED: {
+    emoji: '🔄', title: 'AI 服務暫時繁忙',
+    body: 'Anthropic 伺服器目前負載過高，通常幾秒後即可恢復，請稍後再試。',
+    persistent: false, retryable: true,
+  },
+  SERVER_ERROR: {
+    emoji: '⚙️', title: 'Anthropic 服務異常',
+    body: '服務暫時不穩定，屬短暫問題，請稍後重試。',
+    actionLabel: '查看服務狀態', actionUrl: 'https://status.anthropic.com',
+    persistent: false, retryable: true,
+  },
+  TIMEOUT: {
+    emoji: '⏱', title: '生成超時（超過 55 秒）',
+    body: '請嘗試縮短課程說明，或減少上傳的 PDF 頁數後再試。',
+    persistent: false, retryable: true,
+  },
+  BAD_JSON: {
+    emoji: '⚙️', title: 'AI 回應格式錯誤',
+    body: '模型回應無法解析為 JSON，屬偶發問題，請重試一次。',
+    persistent: false, retryable: true,
+  },
+  EMPTY_RESPONSE: {
+    emoji: '⚙️', title: 'AI 回應為空',
+    body: 'Claude 未回傳任何內容，屬偶發問題，請重試一次。',
+    persistent: false, retryable: true,
+  },
+  METHOD_NOT_ALLOWED: {
+    emoji: '⚙️', title: '系統請求方式錯誤',
+    body: '請重新整理頁面後再試，若問題持續請聯絡管理員。',
+    persistent: false, retryable: false,
+  },
+  BAD_REQUEST: {
+    emoji: '⚙️', title: '系統參數錯誤',
+    body: '請重新整理頁面後再試，若問題持續請聯絡管理員。',
+    persistent: false, retryable: false,
+  },
+};
+
+// 顯示一個帶有標題、說明、可選連結的自訂錯誤 Toast
+function showAiErrorToast(apiCode, fallbackMessage) {
+  const info = AI_ERROR_MAP[apiCode] ?? null;
+  const emoji       = info?.emoji       ?? '⚠️';
+  const title       = info?.title       ?? 'AI 生成失敗';
+  const body        = info?.body        ?? (fallbackMessage || '未知錯誤，請重試。');
+  const actionLabel = info?.actionLabel ?? null;
+  const actionUrl   = info?.actionUrl   ?? null;
+  const duration    = info?.persistent  ? Infinity : 10000;
+
+  toast.custom(
+    (t) => (
+      <div
+        style={{
+          background: '#fff',
+          border: '1.5px solid #fca5a5',
+          borderRadius: 12,
+          padding: '12px 14px',
+          maxWidth: 340,
+          boxShadow: '0 4px 18px rgba(0,0,0,0.12)',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 10,
+          opacity: t.visible ? 1 : 0,
+          transition: 'opacity 200ms',
+        }}
+      >
+        <span style={{ fontSize: 20, lineHeight: '1.3', flexShrink: 0 }}>{emoji}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontWeight: 800, fontSize: 13, color: '#1e293b', margin: 0 }}>{title}</p>
+          <p style={{ fontSize: 11.5, color: '#475569', marginTop: 4, lineHeight: 1.55, margin: '4px 0 0' }}>
+            {body}
+          </p>
+          {actionLabel && actionUrl && (
+            <a
+              href={actionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline-block', marginTop: 6, fontSize: 11.5, color: '#4f46e5', textDecoration: 'underline' }}
+            >
+              {actionLabel} →
+            </a>
+          )}
+        </div>
+        <button
+          onClick={() => toast.dismiss(t.id)}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: '#94a3b8', fontSize: 15, padding: '0 0 0 6px', lineHeight: 1, flexShrink: 0,
+          }}
+          aria-label="關閉"
+        >
+          ✕
+        </button>
+      </div>
+    ),
+    { duration, id: `ai-error-${apiCode ?? 'unknown'}` }
+  );
+}
+
 export default function AiGenerator() {
   const { state, updateMeta, updateStateByPath } = useStore();
   const [loading, setLoading] = useState(false);
@@ -302,8 +432,13 @@ export default function AiGenerator() {
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          const detail = errData.detail || errData.error || '';
-          throw new Error(`HTTP ${response.status}${detail ? '：' + detail : ''}`);
+          // 後端回傳結構化錯誤：{ code, title, message, retryable }
+          const apiCode = errData.code || (response.status === 504 ? 'TIMEOUT' : 'UNKNOWN');
+          const error = new Error(errData.title || `HTTP ${response.status}`);
+          error.apiCode    = apiCode;
+          error.apiData    = errData;
+          error.retryable  = errData.retryable !== false; // 沒有 retryable 欄位時預設可重試
+          throw error;
         }
 
         const result = await response.json();
@@ -341,13 +476,32 @@ export default function AiGenerator() {
         break; // 成功，跳出重試迴圈
 
       } catch (err) {
-        console.error(`AI 生成錯誤（第 ${attempt} 次）：`, err);
-        lastError = err;
-        // 若是最後一次仍失敗，才 fallback
-        if (attempt === MAX_ATTEMPTS) {
-          runBackupLocalGeneration();
-          toast.error(`⚠️ AI 生成失敗（${err.message}），已啟用本地備用文案。`, { duration: 8000 });
+        // AbortController 超時 → 對應 TIMEOUT 錯誤碼
+        if (err.name === 'AbortError') {
+          err.apiCode   = 'TIMEOUT';
+          err.retryable = true;
         }
+
+        console.error(`AI 生成錯誤（第 ${attempt} 次）：`, err.apiCode ?? err.message, err);
+        lastError = err;
+
+        const isRetryable = err.retryable !== false;
+        const isLastAttempt = attempt === MAX_ATTEMPTS;
+
+        // ── 無法靠重試解決的錯誤（餘額不足、Key 錯誤等） ──────────────────────
+        if (!isRetryable) {
+          showAiErrorToast(err.apiCode, err.message);
+          break; // 立即停止，不再重試，也不啟用備用文案（重試也無用）
+        }
+
+        // ── 可重試但已耗盡次數 ────────────────────────────────────────────────
+        if (isLastAttempt) {
+          runBackupLocalGeneration();
+          showAiErrorToast(err.apiCode, err.message);
+          // 額外提示備用文案已啟用
+          setTimeout(() => toast('📋 已載入本地備用文案作為暫替內容', { duration: 5000 }), 600);
+        }
+        // 若還有重試次數，靜默繼續下一次
       }
     }
 
