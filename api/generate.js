@@ -134,6 +134,8 @@ function classifyError(err) {
 
 // ── 主 handler ────────────────────────────────────────────────────────────────
 export default async function handler(req, res) {
+  // 主程序版本只寫入平台日誌，不回傳金鑰或環境變數。
+  console.info("Node.js runtime", JSON.stringify({ node: process.version, execPath: process.execPath, openssl: process.versions.openssl }));
   const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
   res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
